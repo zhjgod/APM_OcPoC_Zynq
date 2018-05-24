@@ -43,6 +43,10 @@ public:
         Proximity_Type_RangeFinder = 4,
         Proximity_Type_SITL    = 10,
         Proximity_Type_uSharpPatch = 20,
+		Proximity_Type_TIPI14 = 21,
+		Proximity_Type_TIPI16 = 22,
+		Proximity_Type_uLandingPro = 23,
+		Proximity_Type_uLandingSt = 24,
     };
 
     enum Proximity_Status {

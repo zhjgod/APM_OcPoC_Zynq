@@ -12,7 +12,7 @@ class CANDriver {
 public:
 	void init();
 
-	int can_write(uint8_t * tx_data, uint8_t len, uint32_t tx_id, uint32_t f_type);
+	int can_write(uint8_t * tx_data, uint8_t len, uint32_t tx_id);
 	int can_read(uint8_t * rx_data, uint8_t len, uint32_t* rx_id);
 
 private :

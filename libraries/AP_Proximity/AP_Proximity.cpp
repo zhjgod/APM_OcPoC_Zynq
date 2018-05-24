@@ -19,6 +19,10 @@
 #include "AP_Proximity_RangeFinder.h"
 #include "AP_Proximity_MAV.h"
 #include "AP_Proximity_uSharpPatch.h"
+#include "AP_Proximity_TIPI14.h"
+#include "AP_Proximity_TIPI16.h"
+#include "AP_Proximity_uLandingPro.h"
+#include "AP_Proximity_uLandingSt.h"
 #include "AP_Proximity_SITL.h"
 
 extern const AP_HAL::HAL &hal;
@@ -300,6 +304,26 @@ void AP_Proximity::detect_instance(uint8_t instance)
     if (type == Proximity_Type_uSharpPatch) {
         state[instance].instance = instance;
         drivers[instance] = new AP_Proximity_uSharpPatch(*this, state[instance], serial_manager);
+        return;
+    }
+    if (type == Proximity_Type_TIPI14) {
+    	state[instance].instance = instance;
+    	drivers[instance] = new AP_Proximity_TIPI14(*this, state[instance], serial_manager);
+    	return;
+    }
+    if (type == Proximity_Type_TIPI16) {
+        state[instance].instance = instance;
+        drivers[instance] = new AP_Proximity_TIPI16(*this, state[instance], serial_manager);
+        return;
+    }
+    if (type == Proximity_Type_uLandingPro) {
+        state[instance].instance = instance;
+        drivers[instance] = new AP_Proximity_uLandingPro(*this, state[instance], serial_manager);
+        return;
+    }
+    if (type == Proximity_Type_uLandingSt) {
+        state[instance].instance = instance;
+        drivers[instance] = new AP_Proximity_uLandingSt(*this, state[instance], serial_manager);
         return;
     }
 

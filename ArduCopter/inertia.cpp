@@ -1,4 +1,5 @@
 #include "Copter.h"
+#include "utility.h"
 
 // read_inertia - read inertia in from accelerometers
 void Copter::read_inertia()
@@ -27,4 +28,8 @@ void Copter::read_inertia()
     // set flags and get velocity
     current_loc.flags.relative_alt = true;
     climb_rate = inertial_nav.get_velocity_z();
+
+    Utility::my_latitude = inertial_nav.get_latitude();
+    Utility::my_longitude = inertial_nav.get_longitude();
+    Utility::my_inv_alt = inertial_nav.get_altitude();
 }

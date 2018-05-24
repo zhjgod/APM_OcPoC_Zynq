@@ -31,7 +31,7 @@ void CANDriver::init() {
 
     struct sockaddr_can addr;
     struct ifreq ifr;
-    struct can_filter rfilter;
+//    struct can_filter rfilter;
 
     /* create socket */
     _s = socket(PF_CAN, SOCK_RAW, CAN_RAW);
@@ -49,21 +49,21 @@ void CANDriver::init() {
     /* bind socket with can0 */
     bind(_s, (struct sockaddr*)&addr, sizeof(addr));
 
-    /* set receive rule */
-    rfilter.can_id   = 0x155AA500|CAN_EFF_FLAG;
-    rfilter.can_mask = 0x155AA500|CAN_EFF_FLAG;
-
-    /* enable can */
-    setsockopt(_s, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter, sizeof(struct can_filter));
+//    /* set receive rule */
+//    rfilter.can_id   = 0x00000000|CAN_EFF_FLAG;
+//    rfilter.can_mask = 0x00000000|CAN_EFF_FLAG;
+//
+//    /* enable can */
+//    setsockopt(_s, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter, sizeof(struct can_filter));
 
     return;
 }
 
-int CANDriver::can_write(uint8_t * tx_data, uint8_t len, uint32_t tx_id, uint32_t f_type)
+int CANDriver::can_write(uint8_t * tx_data, uint8_t len, uint32_t tx_id)
 {
     struct can_frame frame;
 
-    frame.can_id  = tx_id | f_type;
+    frame.can_id  = tx_id;
     frame.can_dlc = len;
 
     for (int i=0; i<len; i++) {
@@ -91,6 +91,8 @@ int CANDriver::can_read(uint8_t * rx_data, uint8_t len, uint32_t* rx_id)
 #ifdef CAN_DEBUG
     if (nbytes == -1) {
         hal.console->printf("can_read failed; errno: %s\n", strerror(errno));
+    } else {
+    	hal.console->printf("can_read %d bytes;\n", nbytes);
     }
 #endif
 

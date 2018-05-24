@@ -14,9 +14,18 @@
  */
 #include "Copter.h"
 #include "version.h"
+#include "utility.h"
 
 const AP_HAL::HAL& hal = AP_HAL::get_HAL();
 
+int Utility::my_fd = -1;
+float Utility::my_roll = 999;
+float Utility::my_pitch = 999;
+float Utility::my_yaw = 999;
+int32_t Utility::my_latitude = -1;
+int32_t Utility::my_longitude = -1;
+int32_t Utility::my_inv_alt = -1;
+int32_t Utility::my_baro_alt = -1;
 /*
   constructor for main Copter class
  */

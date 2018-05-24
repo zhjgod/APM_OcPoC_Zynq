@@ -100,19 +100,19 @@ bool AP_Proximity_uSharpPatch::can_hub_init()
     // send series of commands to initialize the can hub
 
     /* command can hub initialize base peripherals */
-    can->can_write(nullptr, 0, HUB_CMD_INIT, CAN_EFF_FLAG);
+
 
     /* delay 10 milliseconds for frame interval */
     hal.scheduler->delay(10);
 
     /* check hub led */
-    can->can_write(nullptr, 0, HUB_CMD_CHECK_LED, CAN_EFF_FLAG);
+    can->can_write(nullptr, 0, HUB_CMD_CHECK_LED | CAN_EFF_FLAG);
 
     // delay 1.5 seconds while hub checks all 10 led and displays state by led
     hal.scheduler->delay(1500);
 
     /* command can hub return the radars' states */
-    can->can_write(nullptr, 0, HUB_CMD_REQ_STATE, CAN_EFF_FLAG);
+    can->can_write(nullptr, 0, HUB_CMD_REQ_STATE | CAN_EFF_FLAG);
 
     uint32_t last_call_time, now = AP_HAL::millis();
     last_call_time = now;
@@ -169,7 +169,7 @@ bool AP_Proximity_uSharpPatch::can_hub_init()
     }
 
     /* command radar return every radar's data for begin update loop */
-    can->can_write(nullptr, 0, HUB_CMD_REQ_DATA, CAN_EFF_FLAG);
+    can->can_write(nullptr, 0, HUB_CMD_REQ_DATA | CAN_EFF_FLAG);
 
     /* it will return 1 while ret = -1 for the return type is bool */
     if (ret == -1) {
@@ -260,7 +260,7 @@ bool AP_Proximity_uSharpPatch::get_reading(void)
     }
 
     /* request hub return a new package radar data */
-    can->can_write(nullptr, 0, HUB_CMD_REQ_DATA, CAN_EFF_FLAG);
+    can->can_write(nullptr, 0, HUB_CMD_REQ_DATA | CAN_EFF_FLAG);
 
     return ret;
 }
