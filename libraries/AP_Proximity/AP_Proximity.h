@@ -23,6 +23,7 @@
 
 #define PROXIMITY_MAX_INSTANCES             1   // Maximum number of proximity sensor instances available on this platform
 #define PROXIMITY_YAW_CORRECTION_DEFAULT    22  // default correction for sensor error in yaw
+#define PROXIMITY_PITCH_CORRECTION_DEFAULT  0   // default correction for sensor error in pitch
 #define PROXIMITY_MAX_IGNORE                6   // up to six areas can be ignored
 
 class AP_Proximity_Backend;
@@ -47,6 +48,8 @@ public:
 		Proximity_Type_TIPI16 = 22,
 		Proximity_Type_uLandingPro = 23,
 		Proximity_Type_uLandingSt = 24,
+		Proximity_Type_uSharp3D = 25,
+		Proximity_Type_Beixing = 26,
     };
 
     enum Proximity_Status {
@@ -74,6 +77,7 @@ public:
     // return sensor orientation and yaw correction
     uint8_t get_orientation(uint8_t instance) const;
     int16_t get_yaw_correction(uint8_t instance) const;
+	int8_t get_pitch_correction(uint8_t instance) const;
 
     // return sensor health
     Proximity_Status get_status(uint8_t instance) const;
@@ -141,6 +145,7 @@ private:
     AP_Int8  _type[PROXIMITY_MAX_INSTANCES];
     AP_Int8  _orientation[PROXIMITY_MAX_INSTANCES];
     AP_Int16 _yaw_correction[PROXIMITY_MAX_INSTANCES];
+	AP_Int8  _pitch_correction[PROXIMITY_MAX_INSTANCES];
     AP_Int16 _ignore_angle_deg[PROXIMITY_MAX_IGNORE];   // angle (in degrees) of area that should be ignored by sensor (i.e. leg shows up)
     AP_Int8 _ignore_width_deg[PROXIMITY_MAX_IGNORE];    // width of beam (in degrees) that should be ignored
 

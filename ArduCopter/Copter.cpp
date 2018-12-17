@@ -19,6 +19,10 @@
 const AP_HAL::HAL& hal = AP_HAL::get_HAL();
 
 int Utility::my_fd = -1;
+int Utility::my_st_fd = -1;
+int Utility::my_avoid_fd = -1;
+int Utility::my_beixing_fd = -1;
+int Utility::my_pro_fd = -1;
 float Utility::my_roll = 999;
 float Utility::my_pitch = 999;
 float Utility::my_yaw = 999;
@@ -26,6 +30,17 @@ int32_t Utility::my_latitude = -1;
 int32_t Utility::my_longitude = -1;
 int32_t Utility::my_inv_alt = -1;
 int32_t Utility::my_baro_alt = -1;
+int32_t Utility::my_lidar_alt = -1;
+int32_t Utility::my_sona_alt = -1;
+float Utility::my_vel_x = -1;
+float Utility::my_vel_y = -1;
+float Utility::my_vel_z = -1;
+int32_t Utility::my_avoid_flag = -99;
+float Utility::my_current_velocity = -99.0;
+float Utility::my_desired_velocity = -99.0;
+int32_t Utility::my_avoid_count = 0;
+float Utility::my_prx_dis = 0;
+int32_t Utility::my_beixing = -1;
 /*
   constructor for main Copter class
  */

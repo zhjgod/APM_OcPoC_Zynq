@@ -39,11 +39,24 @@ AP_Proximity_uLandingSt::AP_Proximity_uLandingSt(AP_Proximity &_frontend,
 						AP_SerialManager::SerialProtocol_Aerotenna_uSharp, 0));
 	}
 
+	uart1 = serial_manager.find_serial(
+			AP_SerialManager::SerialProtocol_Aerotenna_beixing, 0);
+	if (uart1 != nullptr) {
+		uart1->begin(
+				serial_manager.find_baudrate(
+						AP_SerialManager::SerialProtocol_Aerotenna_beixing, 0));
+	}
+
 	for (uint8_t i = 0; i < _num_sectors; i++) {
 		_angle[i] = _sector_middle_deg[i];
 		_distance[i] = PROXIMITY_ULANDINGST_DISTANCE_MAX;
 		_distance_valid[i] = true;
 	}
+
+	buf = new uint8_t[2740];
+	idx = 0;
+	buf1 = new uint8_t[128];
+	idx1 = 0;
 }
 
 /* detect if a Aerotenna proximity sensor is connected by looking for a configured serial port */
@@ -68,48 +81,95 @@ bool AP_Proximity_uLandingSt::get_reading(void) {
 		return false ;
 	}
 
-	// read any available lines from the uLanding
-	uint16_t dis = 0;
-	uint8_t index = 0;
-
-	int16_t nbytes = uart->available();
-	while (nbytes-- > 0) {
-		uint8_t c = uart->read();
-		// high head
-		if (c == 0x55 && index == 0) {
-			// low head
-			if (nbytes-- > 0) {
-				c = uart->read();
-				if (c == 0xAA) {
-					index = 1;
-					linebuf_len = 0;
-					continue;
+	// read beixing radar
+	if (uart1 != nullptr) {
+		uint32_t nbytes = uart1->available();
+		hal.console->printf("beixing read %d bytes\n", nbytes);
+		while (nbytes-- > 0) {
+			uint8_t d = uart1->read();
+			if (idx1 == 0) {
+				if (d == 0x59) {
+					buf1[idx1++] = d;
 				}
-			}
-		}
-		// now it is ready to decode index information
-		if (index == 1) {
-			linebuf[linebuf_len++] = c;
-			if (linebuf_len == 2) {
-				dis = linebuf[0] + (linebuf[1] << 8);
-				index = 0;
-				linebuf_len = 0;
+			} else if (idx1 == 1) {
+				if (d == 0x59) {
+					buf1[idx1++] = d;
+				} else {
+					idx1 = 0;
+				}
+			} else {
+				buf1[idx1++] = d;
+				// check tail
+				if (idx1 == 9) {
+					// check
+					uint16_t calc_check = 0;
+					for (uint8_t i = 0; i < 8; i++) {
+						calc_check += buf1[i];
+					}
+					if ((calc_check & 0xFF) == buf1[8]) {
+						Utility::my_beixing = buf1[2] + buf1[3] * 256;
+						hal.console->printf("===================== one frame %d \n", Utility::my_beixing);
+					} else {
+						hal.console->printf("===================== error frame \n");
+					}
+					idx1 = 0;
+				}
 			}
 		}
 	}
 
-	// disk
-	Utility::write_my_log("%d\t%d\t%d\t%f\t%f\t%f\n",
-			Utility::my_baro_alt,
-			Utility::my_inv_alt,
-			dis,
-			Utility::my_roll,
-			Utility::my_pitch,
-			Utility::my_yaw);
-	hal.console->printf("baro_alt:%d\tinv_alt:%d\tulandingst_alt:%d\n",
-				Utility::my_baro_alt,
-				Utility::my_inv_alt,
-				dis);
+	// read any available lines from the uLanding
+	uint32_t nbytes = uart->available();
+	hal.console->printf("infineon read %d bytes\n", nbytes);
+	while (nbytes-- > 0) {
+		uint8_t d = uart->read();
+		if (idx == 0) {
+			if (d == 0x5A) {
+				buf[idx++] = d;
+			}
+		} else if (idx == 1) {
+			if (d == 0xA5) {
+				buf[idx++] = d;
+			} else {
+				idx = 0;
+			}
+		} else if (idx == 2) {
+			if (d == 0x55) {
+				buf[idx++] = d;
+			} else {
+				idx = 0;
+			}
+		} else if (idx == 3) {
+			if (d == 0xAA) {
+				buf[idx++] = d;
+				hal.console->printf("********************* find head \n");
+			} else {
+				idx = 0;
+			}
+		} else {
+			buf[idx++] = d;
+			// check tail
+			if (buf[idx - 1] == 0xFE && buf[idx - 2] == 0xEF && buf[idx - 3] == 0xFF && buf[idx - 4] == 0xEE) {
+				// check length
+				if (idx == 2740) {
+					hal.console->printf("********************* one frame \n");
+					// save
+					Utility::write_my_st_log(buf, 2740);
+					Utility::write_my_st_log(&Utility::my_beixing, 4);
+					Utility::write_my_st_log(&Utility::my_roll, 4);
+					Utility::write_my_st_log(&Utility::my_pitch, 4);
+					Utility::write_my_st_log(&Utility::my_yaw, 4);
+				} else {
+					hal.console->printf("********************* error frame \n");
+				}
+				idx = 0;
+			} else if (idx > 2740) {
+				hal.console->printf("********************* miss tail \n");
+				idx = 0;
+			}
+		}
+	}
+
 
 	for (uint8_t i = 0; i < _num_sectors; i++) {
 		_distance[i] = PROXIMITY_ULANDINGST_DISTANCE_MAX;

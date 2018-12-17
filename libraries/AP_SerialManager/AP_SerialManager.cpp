@@ -208,11 +208,24 @@ void AP_SerialManager::init()
                     break;
                 case SerialProtocol_Aerotenna_uSharp:
                     // Note baudrate is hardcoded to 115200
-                    state[i].baud = AP_SERIALMANAGER_ULANDING_BAUD / 1000;   // update baud param in case user looks at it
+//                    state[i].baud = AP_SERIALMANAGER_ULANDING_BAUD / 1000;   // update baud param in case user looks at it
                     state[i].uart->begin(map_baudrate(state[i].baud),
                                          AP_SERIALMANAGER_ULANDING_BUFSIZE_RX,
                                          AP_SERIALMANAGER_ULANDING_BUFSIZE_TX);
                     break;
+                case SerialProtocol_Wifi:
+                	state[i].baud = AP_SERIALMANAGER_WIFI_BAUD / 1000;   // update baud param in case user looks at it
+                	state[i].uart->begin(map_baudrate(state[i].baud),
+                	AP_SERIALMANAGER_WIFI_BUFSIZE_RX,
+                	AP_SERIALMANAGER_WIFI_BUFSIZE_TX);
+                	break;
+                case SerialProtocol_Aerotenna_beixing:
+                	// Note baudrate is hardcoded to 115200
+                	state[i].baud = AP_SERIALMANAGER_ULANDING_BAUD / 1000;   // update baud param in case user looks at it
+                	state[i].uart->begin(map_baudrate(state[i].baud),
+                	                     AP_SERIALMANAGER_ULANDING_BUFSIZE_RX,
+                	                     AP_SERIALMANAGER_ULANDING_BUFSIZE_TX);
+                	break;
             }
         }
     }
@@ -349,6 +362,7 @@ uint32_t AP_SerialManager::map_baudrate(int32_t rate) const
     case 500:  return 500000;
     case 921:  return 921600;
     case 1500:  return 1500000;
+    case 5620:	return 5620000;
     }
 
     if (rate > 2000) {

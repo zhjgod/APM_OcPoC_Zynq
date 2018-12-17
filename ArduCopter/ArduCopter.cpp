@@ -301,6 +301,10 @@ void Copter::fast_loop()
     if (should_log(MASK_LOG_ANY)) {
         Log_Sensor_Health();
     }
+
+	if (Utility::my_avoid_flag >= 20) {
+		set_mode(BRAKE, MODE_REASON_AVOIDANCE);
+	}
 }
 
 // rc_loops - reads user input from transmitter/receiver

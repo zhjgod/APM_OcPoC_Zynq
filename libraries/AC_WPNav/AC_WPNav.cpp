@@ -1,5 +1,6 @@
 #include <AP_HAL/AP_HAL.h>
 #include "AC_WPNav.h"
+#include "../ArduCopter/utility.h"
 
 extern const AP_HAL::HAL& hal;
 
@@ -301,9 +302,14 @@ void AC_WPNav::calc_loiter_desired_velocity(float nav_dt, float ekfGndSpdLimit)
     }
 
     // Limit the velocity to prevent fence violations
+    Utility::my_avoid_count += 1;
+	Utility::my_avoid_flag = 0;
+    Utility::my_current_velocity = 0;
+    Utility::my_desired_velocity = 0;
     if (_avoid != nullptr) {
         _avoid->adjust_velocity(_pos_control.get_pos_xy_kP(), _loiter_accel_cmss, desired_vel);
     }
+	// Utility::write_my_avoid_log("%d %d %f %f %f\n", Utility::my_avoid_count, Utility::my_avoid_flag, Utility::my_current_velocity, Utility::my_desired_velocity, Utility::my_prx_dis);
 
     // send adjusted feed forward velocity back to position controller
     _pos_control.set_desired_velocity_xy(desired_vel.x,desired_vel.y);

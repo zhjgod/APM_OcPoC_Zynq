@@ -69,6 +69,10 @@
 #define AP_SERIALMANAGER_ULANDING_BUFSIZE_RX     128
 #define AP_SERIALMANAGER_ULANDING_BUFSIZE_TX     128
 
+#define AP_SERIALMANAGER_WIFI_BAUD			115200
+#define AP_SERIALMANAGER_WIFI_BUFSIZE_RX	128
+#define AP_SERIALMANAGER_WIFI_BUFSIZE_TX	128
+
 
 class AP_SerialManager {
 
@@ -91,6 +95,8 @@ public:
         SerialProtocol_Aerotenna_uLanding      = 12, // Ulanding support
         SerialProtocol_Beacon = 13,
         SerialProtocol_Aerotenna_uSharp        = 14, // Aerotenna uSharp support
+		SerialProtocol_Wifi = 15,
+		SerialProtocol_Aerotenna_beixing = 16,
     };
 
     // Constructor

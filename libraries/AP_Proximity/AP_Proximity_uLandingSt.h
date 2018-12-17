@@ -6,6 +6,7 @@
 #define PROXIMITY_ULANDINGST_DISTANCE_MAX      600.0f
 #define PROXIMITY_ULANDINGST_DISTANCE_MIN      0.5f
 
+
 class AP_Proximity_uLandingSt : public AP_Proximity_Backend
 {
 
@@ -30,4 +31,12 @@ private:
     AP_HAL::UARTDriver *uart = nullptr;
     uint8_t linebuf[10];
     uint8_t linebuf_len = 0;
+
+	AP_HAL::UARTDriver *uart1 = nullptr;
+
+    uint8_t* buf;
+    int32_t idx;
+
+	uint8_t* buf1;
+	int32_t idx1;
 };

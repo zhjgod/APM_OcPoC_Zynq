@@ -573,10 +573,12 @@ void Copter::do_aux_switch_function(int8_t ch_function, uint8_t ch_flag)
 #if PROXIMITY_ENABLED == ENABLED && AC_AVOID_ENABLED == ENABLED
             switch (ch_flag) {
                 case AUX_SWITCH_HIGH:
+					hal.console->printf("proximity_avoidance_enable:true\n");
                     avoid.proximity_avoidance_enable(true);
                     Log_Write_Event(DATA_AVOIDANCE_PROXIMITY_ENABLE);
                     break;
                 case AUX_SWITCH_LOW:
+					hal.console->printf("proximity_avoidance_enable:false\n");
                     avoid.proximity_avoidance_enable(false);
                     Log_Write_Event(DATA_AVOIDANCE_PROXIMITY_DISABLE);
                     break;

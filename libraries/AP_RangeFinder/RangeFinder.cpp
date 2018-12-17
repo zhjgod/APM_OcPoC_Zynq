@@ -27,6 +27,7 @@
 #include "AP_RangeFinder_LeddarOne.h"
 #include "AP_RangeFinder_uLanding.h"
 #include "AP_RangeFinder_trone.h"
+#include "AP_RangeFinder_beixing.h"
 #include <AP_BoardConfig/AP_BoardConfig.h>
 
 extern const AP_HAL::HAL &hal;
@@ -691,6 +692,12 @@ void RangeFinder::detect_instance(uint8_t instance)
             state[instance].instance = instance;
             drivers[instance] = new AP_RangeFinder_analog(*this, instance, state[instance]);
         }
+        break;
+    case RangeFinder_TYPE_BEIXING:
+    	if (AP_RangeFinder_beixing::detect(*this, instance, serial_manager)) {
+    	    state[instance].instance = instance;
+    	    drivers[instance] = new AP_RangeFinder_beixing(*this, instance, state[instance], serial_manager);
+    	}
         break;
     default:
         break;

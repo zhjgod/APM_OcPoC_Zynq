@@ -55,6 +55,7 @@ public:
         RangeFinder_TYPE_PLI2CV3= 15,
 		RangeFinder_TYPE_ULANDINGPRO = 21,
 		RangeFinder_TYPE_ULANDINGST = 22,
+		RangeFinder_TYPE_BEIXING = 23,
     };
 
     enum RangeFinder_Function {

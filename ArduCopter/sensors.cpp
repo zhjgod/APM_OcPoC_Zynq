@@ -1,4 +1,5 @@
 #include "Copter.h"
+#include "utility.h"
 
 void Copter::init_barometer(bool full_calibration)
 {
@@ -76,6 +77,7 @@ void Copter::read_rangefinder(void)
     rangefinder_state.alt_healthy = false;
     rangefinder_state.alt_cm = 0;
 #endif
+    Utility::my_sona_alt = rangefinder_state.alt_cm;
 }
 
 // return true if rangefinder_alt can be used

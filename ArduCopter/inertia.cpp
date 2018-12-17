@@ -32,4 +32,8 @@ void Copter::read_inertia()
     Utility::my_latitude = inertial_nav.get_latitude();
     Utility::my_longitude = inertial_nav.get_longitude();
     Utility::my_inv_alt = inertial_nav.get_altitude();
+    const Vector3f& vel = inertial_nav.get_velocity();
+    Utility::my_vel_x = vel.x;
+    Utility::my_vel_y = vel.y;
+    Utility::my_vel_z = vel.z;
 }

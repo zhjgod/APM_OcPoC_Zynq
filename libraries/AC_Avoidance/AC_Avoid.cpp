@@ -1,4 +1,5 @@
 #include "AC_Avoid.h"
+#include "../ArduCopter/utility.h"
 
 const AP_Param::GroupInfo AC_Avoid::var_info[] = {
 
@@ -48,8 +49,10 @@ AC_Avoid::AC_Avoid(const AP_AHRS& ahrs, const AP_InertialNav& inav, const AC_Fen
 
 void AC_Avoid::adjust_velocity(float kP, float accel_cmss, Vector2f &desired_vel)
 {
+	Utility::my_avoid_flag = 10;
     // exit immediately if disabled
     if (_enabled == AC_AVOID_DISABLED) {
+    	Utility::my_avoid_flag = -1;
         return;
     }
 
@@ -63,6 +66,8 @@ void AC_Avoid::adjust_velocity(float kP, float accel_cmss, Vector2f &desired_vel
 
     if ((_enabled & AC_AVOID_USE_PROXIMITY_SENSOR) > 0 && _proximity_enabled) {
         adjust_velocity_proximity(kP, accel_cmss_limited, desired_vel);
+    } else {
+    	Utility::my_avoid_flag = 11;
     }
 }
 
@@ -259,13 +264,16 @@ void AC_Avoid::adjust_velocity_polygon_fence(float kP, float accel_cmss, Vector2
  */
 void AC_Avoid::adjust_velocity_proximity(float kP, float accel_cmss, Vector2f &desired_vel)
 {
+	Utility::my_avoid_flag = 12;
     // exit immediately if proximity sensor is not present
     if (_proximity.get_status() != AP_Proximity::Proximity_Good) {
+    	Utility::my_avoid_flag = -2;
         return;
     }
 
     // exit immediately if no desired velocity
     if (desired_vel.is_zero()) {
+    	Utility::my_avoid_flag = -3;
         return;
     }
 
@@ -280,8 +288,10 @@ void AC_Avoid::adjust_velocity_proximity(float kP, float accel_cmss, Vector2f &d
  */
 void AC_Avoid::adjust_velocity_polygon(float kP, float accel_cmss, Vector2f &desired_vel, const Vector2f* boundary, uint16_t num_points, bool earth_frame, float margin)
 {
+	Utility::my_avoid_flag = 13;
     // exit if there are no points
     if (boundary == nullptr || num_points == 0) {
+    	Utility::my_avoid_flag = -4;
         return;
     }
 
@@ -292,6 +302,7 @@ void AC_Avoid::adjust_velocity_polygon(float kP, float accel_cmss, Vector2f &des
     }
     Vector2f position_xy(position.x, position.y);
     if (_fence.boundary_breached(position_xy, num_points, boundary)) {
+    	Utility::my_avoid_flag = -5;
         return;
     }
 
@@ -323,6 +334,9 @@ void AC_Avoid::adjust_velocity_polygon(float kP, float accel_cmss, Vector2f &des
             // Adjust velocity to not violate this edge.
             limit_direction /= limit_distance;
             limit_velocity(kP, accel_cmss, safe_vel, limit_direction, MAX(limit_distance - margin_cm,0.0f));
+			if (Utility::my_avoid_flag == 20) {
+				Utility::my_avoid_flag += i;
+			}
         } else {
             // We are exactly on the edge - treat this as a fence breach.
             // i.e. do not adjust velocity.
@@ -353,8 +367,11 @@ void AC_Avoid::limit_velocity(float kP, float accel_cmss, Vector2f &desired_vel,
     // project onto limit direction
     const float speed = desired_vel * limit_direction;
     if (speed > max_speed) {
+    	Utility::my_avoid_flag = 20;
+		Utility::my_current_velocity = speed;
+    	Utility::my_desired_velocity = max_speed;
         // subtract difference between desired speed and maximum acceptable speed
-        desired_vel += limit_direction*(max_speed - speed);
+    	desired_vel += limit_direction*(max_speed - speed);
     }
 }
 
