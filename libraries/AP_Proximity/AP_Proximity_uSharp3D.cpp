@@ -62,7 +62,7 @@ bool AP_Proximity_uSharp3D::detect(AP_SerialManager &serial_manager) {
 
 /* update the state of the sensor */
 void AP_Proximity_uSharp3D::update(void) {
-	put_sending();
+//	put_sending();
 	if (get_reading()) {
 		set_status(AP_Proximity::Proximity_Good);
 	} else {
