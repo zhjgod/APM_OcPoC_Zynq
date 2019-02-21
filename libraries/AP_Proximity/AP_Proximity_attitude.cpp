@@ -35,6 +35,7 @@ AP_Proximity_Attitude::AP_Proximity_Attitude(AP_Proximity &_frontend,
 	}
 	buf = new uint8_t[16];
 	idx = 0;
+	Utility::my_fd_name = "/beixing_";
 }
 
 /* detect if a Aerotenna proximity sensor is connected by looking for a configured serial port */
@@ -85,7 +86,7 @@ bool AP_Proximity_Attitude::get_reading(void) {
 				}
 				if ((calc_check & 0xFF) == buf[8]) {
 					Utility::my_beixing = buf[2] + buf[3] * 256;
-					Utility::write_my_beixing_log("%d ", Utility::my_beixing);
+					Utility::write_my_log_str("%d ", Utility::my_beixing);
 					hal.console->printf("===================== one frame %d \n", Utility::my_beixing);
 				} else {
 					hal.console->printf("===================== error frame \n");

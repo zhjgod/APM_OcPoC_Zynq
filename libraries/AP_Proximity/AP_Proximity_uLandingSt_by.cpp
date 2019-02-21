@@ -14,7 +14,7 @@
  */
 
 #include <AP_HAL/AP_HAL.h>
-#include "AP_Proximity_uLandingSt.h"
+#include "AP_Proximity_uLandingSt_by.h"
 #include <AP_SerialManager/AP_SerialManager.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -23,12 +23,19 @@
 
 extern const AP_HAL::HAL& hal;
 
+union {
+	float f;
+	unsigned char x[4];
+} data;
+
+
+
 /*
  The constructor also initializes the proximity sensor. Note that this
  constructor is not called until detect() returns true, so we
  already know that we should setup the proximity sensor
  */
-AP_Proximity_uLandingSt::AP_Proximity_uLandingSt(AP_Proximity &_frontend,
+AP_Proximity_uLandingSt_by::AP_Proximity_uLandingSt_by(AP_Proximity &_frontend,
 		AP_Proximity::Proximity_State &_state, AP_SerialManager &serial_manager) :
 		AP_Proximity_Backend(_frontend, _state) {
 	uart = serial_manager.find_serial(
@@ -39,36 +46,27 @@ AP_Proximity_uLandingSt::AP_Proximity_uLandingSt(AP_Proximity &_frontend,
 						AP_SerialManager::SerialProtocol_Aerotenna_uSharp, 0));
 	}
 
-	uart1 = serial_manager.find_serial(
-			AP_SerialManager::SerialProtocol_Aerotenna_beixing, 0);
-	if (uart1 != nullptr) {
-		uart1->begin(
-				serial_manager.find_baudrate(
-						AP_SerialManager::SerialProtocol_Aerotenna_beixing, 0));
-	}
 
 	for (uint8_t i = 0; i < _num_sectors; i++) {
 		_angle[i] = _sector_middle_deg[i];
-		_distance[i] = PROXIMITY_ULANDINGST_DISTANCE_MAX;
+		_distance[i] = PROXIMITY_ULANDINGST_BY_DISTANCE_MAX;
 		_distance_valid[i] = true;
 	}
 
-	buf = new uint8_t[2740];
+	buf = new uint8_t[512];
 	idx = 0;
-	buf1 = new uint8_t[128];
-	idx1 = 0;
-	Utility::my_fd_name = "/st_adc_";
+	Utility::my_fd_name = "/st_alt_";
 }
 
 /* detect if a Aerotenna proximity sensor is connected by looking for a configured serial port */
-bool AP_Proximity_uLandingSt::detect(AP_SerialManager &serial_manager) {
+bool AP_Proximity_uLandingSt_by::detect(AP_SerialManager &serial_manager) {
 	//
 	return serial_manager.find_serial(
 			AP_SerialManager::SerialProtocol_Aerotenna_uSharp, 0) != nullptr;
 }
 
 /* update the state of the sensor */
-void AP_Proximity_uLandingSt::update(void) {
+void AP_Proximity_uLandingSt_by::update(void) {
 	/* read uSharp Hub */
 	if (get_reading()) {
 		set_status(AP_Proximity::Proximity_Good);
@@ -77,53 +75,23 @@ void AP_Proximity_uLandingSt::update(void) {
 	}
 }
 
-bool AP_Proximity_uLandingSt::get_reading(void) {
+bool AP_Proximity_uLandingSt_by::get_reading(void) {
 	if (uart == nullptr) {
 		return false ;
 	}
 
-	// read beixing radar
-	if (uart1 != nullptr) {
-		uint32_t nbytes = uart1->available();
-		hal.console->printf("beixing read %d bytes\n", nbytes);
-		while (nbytes-- > 0) {
-			uint8_t d = uart1->read();
-			if (idx1 == 0) {
-				if (d == 0x59) {
-					buf1[idx1++] = d;
-				}
-			} else if (idx1 == 1) {
-				if (d == 0x59) {
-					buf1[idx1++] = d;
-				} else {
-					idx1 = 0;
-				}
-			} else {
-				buf1[idx1++] = d;
-				// check tail
-				if (idx1 == 9) {
-					// check
-					uint16_t calc_check = 0;
-					for (uint8_t i = 0; i < 8; i++) {
-						calc_check += buf1[i];
-					}
-					if ((calc_check & 0xFF) == buf1[8]) {
-						Utility::my_beixing = buf1[2] + buf1[3] * 256;
-						hal.console->printf("===================== one frame %d \n", Utility::my_beixing);
-					} else {
-						hal.console->printf("===================== error frame \n");
-					}
-					idx1 = 0;
-				}
-			}
-		}
+	if (time_begin == 0) {
+		time_begin = AP_HAL::micros();
 	}
+	uint32_t now = AP_HAL::micros();
+	float times_taken = (now - time_begin) / 1000000.0;
 
 	// read any available lines from the uLanding
 	uint32_t nbytes = uart->available();
-	hal.console->printf("infineon read %d bytes\n", nbytes);
+	hal.console->printf("st_alt read %d bytes\n", nbytes);
 	while (nbytes-- > 0) {
 		uint8_t d = uart->read();
+		hal.console->printf("0x%02X ", d);
 		if (idx == 0) {
 			if (d == 0x5A) {
 				buf[idx++] = d;
@@ -150,22 +118,20 @@ bool AP_Proximity_uLandingSt::get_reading(void) {
 		} else {
 			buf[idx++] = d;
 			// check tail
-			if (buf[idx - 1] == 0xFE && buf[idx - 2] == 0xEF && buf[idx - 3] == 0xFF && buf[idx - 4] == 0xEE) {
-				// check length
-				if (idx == 2740) {
-					hal.console->printf("********************* one frame \n");
-					// save
-					Utility::write_my_log_byte(buf, 2740);
-					Utility::write_my_log_byte(&Utility::my_beixing, 4);
-					Utility::write_my_log_byte(&Utility::my_roll, 4);
-					Utility::write_my_log_byte(&Utility::my_pitch, 4);
-					Utility::write_my_log_byte(&Utility::my_yaw, 4);
-				} else {
-					hal.console->printf("********************* error frame \n");
-				}
-				idx = 0;
-			} else if (idx > 2740) {
-				hal.console->printf("********************* miss tail \n");
+			if (idx == 32) {
+				// save
+				data.x[0] = buf[4];
+				data.x[1] = buf[5];
+				data.x[2] = buf[6];
+				data.x[3] = buf[7];
+				float range_mean = data.f;
+				data.x[0] = buf[16];
+				data.x[1] = buf[17];
+				data.x[2] = buf[18];
+				data.x[3] = buf[19];
+				float range_val = data.f;
+				hal.console->printf("********************* one frame %f %f\n", range_mean, range_val);
+				Utility::write_my_log_str("%f\t%f\t%d\t%d\t%f\n", range_mean, range_val, Utility::my_baro_alt, Utility::my_inv_alt, times_taken);
 				idx = 0;
 			}
 		}
@@ -173,16 +139,17 @@ bool AP_Proximity_uLandingSt::get_reading(void) {
 
 
 	for (uint8_t i = 0; i < _num_sectors; i++) {
-		_distance[i] = PROXIMITY_ULANDINGST_DISTANCE_MAX;
+		_distance[i] = PROXIMITY_ULANDINGST_BY_DISTANCE_MAX;
+		
 	}
 	return true ;
 }
 
 /* get maximum and minimum distances (in meters) of primary sensor */
-float AP_Proximity_uLandingSt::distance_max() const {
-	return PROXIMITY_ULANDINGST_DISTANCE_MAX;
+float AP_Proximity_uLandingSt_by::distance_max() const {
+	return PROXIMITY_ULANDINGST_BY_DISTANCE_MAX;
 }
 
-float AP_Proximity_uLandingSt::distance_min() const {
-	return PROXIMITY_ULANDINGST_DISTANCE_MIN;
+float AP_Proximity_uLandingSt_by::distance_min() const {
+	return PROXIMITY_ULANDINGST_BY_DISTANCE_MIN;
 }

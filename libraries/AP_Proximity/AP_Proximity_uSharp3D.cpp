@@ -43,6 +43,7 @@ AP_Proximity_uSharp3D::AP_Proximity_uSharp3D(AP_Proximity &_frontend,
 
 	memset(buf, 0, 32);
 	buf_idx = 0;
+	Utility::my_fd_name = "/3d_";
 }
 
 /* detect if a Aerotenna proximity sensor is connected by looking for a configured serial port */
@@ -67,8 +68,8 @@ bool AP_Proximity_uSharp3D::put_sending(void) {
 		return false;
 	}
 	int8_t pitch_cor = frontend.get_pitch_correction(state.instance);
-	hal.console->printf("roll:%f, pitch:%f, yaw:%f, alt:%d, pitch_cor:%d \n", 
-		Utility::my_roll, Utility::my_pitch, Utility::my_yaw, Utility::my_inv_alt, pitch_cor);
+//	hal.console->printf("roll:%f, pitch:%f, yaw:%f, alt:%d, pitch_cor:%d \n", 
+//		Utility::my_roll, Utility::my_pitch, Utility::my_yaw, Utility::my_inv_alt, pitch_cor);
 	// send head
 	uart->write(0x5A);
 	uart->write(0xA5);
@@ -157,31 +158,42 @@ bool AP_Proximity_uSharp3D::get_reading(void) {
 				if ((calc_checksum & 0xFF) == checksum) {
 					// good data
 					hal.console->printf("good data. \n");
-					// 
-					uint8_t target_num = buf[buf_idx - 4];
-					if (target_num > 0) {
-						// calc matlab
-						avoid_dis = buf[3] * 256 + buf[4];
+					// state
+					uint8_t status = buf[2];
+					if (status == 0x01) {
+//						for (int j=0; j<buf_idx; j++) {
+//							hal.console->printf("%02X ", buf[j]);
+//						}
+//						hal.console->printf("\n");
+						uint8_t target_num = buf[buf_idx - 4];
+						if (target_num > 0) {
+							// calc matlab
+							avoid_dis = ((buf[3]<<16) + (buf[4]<<8) + buf[5]) / 100.0;
+//							hal.console->printf("%0f\n ", avoid_dis);
+						} else {
+							avoid_dis = PROXIMITY_USHARP3D_DISTANCE_MAX;
+						}
 					} else {
 						avoid_dis = PROXIMITY_USHARP3D_DISTANCE_MAX;
 					}
 					// record data
-					Utility::write_my_log("%f@(%f,%f,%f,%d,%d,%d,%f,%f,%f,%f,%d,%f,%f,%d)\n",
-									times_taken,
-									Utility::my_roll,
-									Utility::my_pitch,
-									Utility::my_yaw,
-									Utility::my_sona_alt,
-									Utility::my_baro_alt,
-									Utility::my_inv_alt,
-									Utility::my_vel_x,
-									Utility::my_vel_y,
-									Utility::my_vel_z,
-									avoid_dis,
-									Utility::my_avoid_flag,
-									Utility::my_current_velocity,
-									Utility::my_desired_velocity,
-									Utility::my_avoid_count);
+//					Utility::write_my_log_str("%f@(%f,%f,%f,%d,%d,%d,%f,%f,%f,%f,%d,%f,%f,%d,%d)\n",
+//									times_taken,
+//									Utility::my_roll,
+//									Utility::my_pitch,
+//									Utility::my_yaw,
+//									Utility::my_sona_alt,
+//									Utility::my_baro_alt,
+//									Utility::my_inv_alt,
+//									Utility::my_vel_x,
+//									Utility::my_vel_y,
+//									Utility::my_vel_z,
+//									avoid_dis,
+//									Utility::my_avoid_flag,
+//									Utility::my_current_velocity,
+//									Utility::my_desired_velocity,
+//									Utility::my_avoid_count,
+//									status);
 				} else {
 					// bad data
 					hal.console->printf("checksum err. \n");
@@ -193,12 +205,12 @@ bool AP_Proximity_uSharp3D::get_reading(void) {
 	}
 
 	Utility::my_prx_dis = avoid_dis;
-	if (avoid_dis > 2) {
-		_distance[0] = avoid_dis;
-	} else {
-		_distance[0] = PROXIMITY_USHARP3D_DISTANCE_MAX;
-	}
-	for (uint8_t i = 1; i < _num_sectors; i++) {
+//	if (avoid_dis > 6) {
+//		_distance[0] = avoid_dis;
+//	} else {
+//		_distance[0] = PROXIMITY_USHARP3D_DISTANCE_MAX;
+//	}
+	for (uint8_t i = 0; i < _num_sectors; i++) {
 		_distance[i] = PROXIMITY_USHARP3D_DISTANCE_MAX;
 	}
 
