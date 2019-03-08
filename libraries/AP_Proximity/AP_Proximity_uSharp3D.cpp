@@ -205,11 +205,11 @@ bool AP_Proximity_uSharp3D::get_reading(void) {
 	}
 
 	Utility::my_prx_dis = avoid_dis;
-//	if (avoid_dis > 6) {
-//		_distance[0] = avoid_dis;
-//	} else {
-//		_distance[0] = PROXIMITY_USHARP3D_DISTANCE_MAX;
-//	}
+	if (avoid_dis > 6) {
+		_distance[0] = avoid_dis;
+	} else {
+		_distance[0] = PROXIMITY_USHARP3D_DISTANCE_MAX;
+	}
 	for (uint8_t i = 0; i < _num_sectors; i++) {
 		_distance[i] = PROXIMITY_USHARP3D_DISTANCE_MAX;
 	}
