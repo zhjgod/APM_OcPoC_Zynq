@@ -68,8 +68,8 @@ bool AP_Proximity_uSharp3D::put_sending(void) {
 		return false;
 	}
 	int8_t pitch_cor = frontend.get_pitch_correction(state.instance);
-//	hal.console->printf("roll:%f, pitch:%f, yaw:%f, alt:%d, pitch_cor:%d \n", 
-//		Utility::my_roll, Utility::my_pitch, Utility::my_yaw, Utility::my_inv_alt, pitch_cor);
+	hal.console->printf("roll:%f, pitch:%f, yaw:%f, alt:%d, pitch_cor:%d \n", 
+		Utility::my_roll, Utility::my_pitch, Utility::my_yaw, Utility::my_inv_alt, pitch_cor);
 	// send head
 	uart->write(0x5A);
 	uart->write(0xA5);
@@ -176,24 +176,26 @@ bool AP_Proximity_uSharp3D::get_reading(void) {
 					} else {
 						avoid_dis = PROXIMITY_USHARP3D_DISTANCE_MAX;
 					}
+					int8_t pitch_cor = frontend.get_pitch_correction(state.instance);
 					// record data
-//					Utility::write_my_log_str("%f@(%f,%f,%f,%d,%d,%d,%f,%f,%f,%f,%d,%f,%f,%d,%d)\n",
-//									times_taken,
-//									Utility::my_roll,
-//									Utility::my_pitch,
-//									Utility::my_yaw,
-//									Utility::my_sona_alt,
-//									Utility::my_baro_alt,
-//									Utility::my_inv_alt,
-//									Utility::my_vel_x,
-//									Utility::my_vel_y,
-//									Utility::my_vel_z,
-//									avoid_dis,
-//									Utility::my_avoid_flag,
-//									Utility::my_current_velocity,
-//									Utility::my_desired_velocity,
-//									Utility::my_avoid_count,
-//									status);
+					Utility::write_my_log_str("%f@(%f,%f,%f,%d,%d,%d,%f,%f,%f,%f,%d,%f,%f,%d,%d,%d)\n",
+									times_taken,
+									Utility::my_roll,
+									Utility::my_pitch,
+									Utility::my_yaw,
+									Utility::my_sona_alt,
+									Utility::my_baro_alt,
+									Utility::my_inv_alt,
+									Utility::my_vel_x,
+									Utility::my_vel_y,
+									Utility::my_vel_z,
+									avoid_dis,
+									Utility::my_avoid_flag,
+									Utility::my_current_velocity,
+									Utility::my_desired_velocity,
+									Utility::my_avoid_count,
+									status,
+									pitch_cor);
 				} else {
 					// bad data
 					hal.console->printf("checksum err. \n");
@@ -210,7 +212,7 @@ bool AP_Proximity_uSharp3D::get_reading(void) {
 	} else {
 		_distance[0] = PROXIMITY_USHARP3D_DISTANCE_MAX;
 	}
-	for (uint8_t i = 0; i < _num_sectors; i++) {
+	for (uint8_t i = 1; i < _num_sectors; i++) {
 		_distance[i] = PROXIMITY_USHARP3D_DISTANCE_MAX;
 	}
 
