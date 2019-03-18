@@ -107,7 +107,7 @@ public:
 		{
 			va_list ap;
 			va_start(ap, fmt);
-			char buff[128];
+			char buff[256];
 			int count = vsprintf(buff, fmt, ap);
 			va_end(ap);
 			return write(my_fd, buff, count);

@@ -28,9 +28,9 @@ AP_Proximity_uSharp3D::AP_Proximity_uSharp3D(AP_Proximity &_frontend,
 	uart = serial_manager.find_serial(
 			AP_SerialManager::SerialProtocol_Aerotenna_uSharp, 0);
 	if (uart != nullptr) {
-		uart->begin(
-				serial_manager.find_baudrate(
-						AP_SerialManager::SerialProtocol_Aerotenna_uSharp, 0));
+		uart->begin(460800);
+//				serial_manager.find_baudrate(
+//						AP_SerialManager::SerialProtocol_Aerotenna_uSharp, 0));
 	}
 	uart_wifi = serial_manager.find_serial(
 			AP_SerialManager::SerialProtocol_Wifi, 0);
@@ -178,7 +178,7 @@ bool AP_Proximity_uSharp3D::get_reading(void) {
 					}
 					int8_t pitch_cor = frontend.get_pitch_correction(state.instance);
 					// record data
-					Utility::write_my_log_str("%f@(%f,%f,%f,%d,%d,%d,%f,%f,%f,%f,%d,%f,%f,%d,%d,%d)\n",
+					int16_t ml_len = Utility::write_my_log_str("%f@(%f,%f,%f,%d,%d,%d,%f,%f,%f,%f,%d,%f,%f,%d,%d,%d)\n",
 									times_taken,
 									Utility::my_roll,
 									Utility::my_pitch,
@@ -196,6 +196,11 @@ bool AP_Proximity_uSharp3D::get_reading(void) {
 									Utility::my_avoid_count,
 									status,
 									pitch_cor);
+//					if (ml_len > 127){
+//						hal.console->printf("write mylog length: %d $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$.\n", ml_len);
+//					}else{
+//						hal.console->printf("write mylog length: %d .\n", ml_len);
+//					}	
 				} else {
 					// bad data
 					hal.console->printf("checksum err. \n");
