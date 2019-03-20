@@ -155,16 +155,16 @@ bool AP_Proximity_uSharp3D::get_reading(void) {
 				for (int i = 2; i < buf_idx - 3; i++) {
 					calc_checksum += buf[i];
 				}
+				for (int j=0; j<buf_idx; j++) {
+					hal.console->printf("%02X ", buf[j]);
+				}
+				hal.console->printf("\n");
 				if ((calc_checksum & 0xFF) == checksum) {
 					// good data
 					hal.console->printf("good data. \n");
 					// state
 					uint8_t status = buf[2];
 					if (status == 0x01) {
-//						for (int j=0; j<buf_idx; j++) {
-//							hal.console->printf("%02X ", buf[j]);
-//						}
-//						hal.console->printf("\n");
 						uint8_t target_num = buf[buf_idx - 4];
 						if (target_num > 0) {
 							// calc matlab
