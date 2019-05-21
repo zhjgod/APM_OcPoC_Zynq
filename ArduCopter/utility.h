@@ -44,17 +44,14 @@ public:
 	static int32_t my_beixing;
 
 	static int my_fd;
-	static int my_avoid_fd;
-	static int my_st_fd;
-	static int my_beixing_fd;
-	static int my_pro_fd;
+	static const char* my_fn;
 
 	static void init_my_log()
 	{
-		char path[32];
+		char path[64];
 		for (int i = 1; ;i++)
 		{
-			sprintf(path, "%s%s%d", HAL_BOARD_LOG_DIRECTORY, "/mylog", i);
+			sprintf(path, "%s%s%d", HAL_BOARD_LOG_DIRECTORY, my_fn, i);
 			if (access(path, 0) == -1)
 			{
 				break;
@@ -63,7 +60,7 @@ public:
 		my_fd = open(path, O_WRONLY | O_CREAT | O_TRUNC | O_APPEND, S_IRUSR | S_IWUSR);
 	}
 
-	static ssize_t write_my_log(const char *fmt, ...)
+	static ssize_t write_my_log_str(const char *fmt, ...)
 	{
 		if (my_fd == -1)
 		{
@@ -73,7 +70,7 @@ public:
 		{
 			va_list ap;
 			va_start(ap, fmt);
-			char buff[128];
+			char buff[512];
 			int count = vsprintf(buff, fmt, ap);
 			va_end(ap);
 			return write(my_fd, buff, count);
@@ -81,128 +78,24 @@ public:
 		return 0;
 	}
 
-	static void init_my_st_log()
+	static ssize_t write_my_log_byte(const char *fmt, ...)
 	{
-		char path[32];
-		for (int i = 1; ;i++)
+		if (my_fd == -1)
 		{
-			sprintf(path, "%s%s%d", HAL_BOARD_LOG_DIRECTORY, "/st_adc_", i);
-			if (access(path, 0) == -1)
-			{
-				break;
-			}
+			init_my_log();
 		}
-		my_st_fd = open(path, O_WRONLY | O_CREAT | O_TRUNC | O_APPEND, S_IRUSR | S_IWUSR);
-	}
-
-	static ssize_t write_my_st_log(const void *data, int len)
-	{
-		if (my_st_fd == -1)
-		{
-			init_my_st_log();
-		}
-		if (my_st_fd != -1)
-		{
-			return write(my_st_fd, data, len);
-		}
-		return 0;
-	}
-
-	static void init_my_avoid_log()
-	{
-		char path[32];
-		for (int i = 1; ;i++)
-		{
-			sprintf(path, "%s%s%d", HAL_BOARD_LOG_DIRECTORY, "/avoid_", i);
-			if (access(path, 0) == -1)
-			{
-				break;
-			}
-		}
-		my_avoid_fd = open(path, O_WRONLY | O_CREAT | O_TRUNC | O_APPEND, S_IRUSR | S_IWUSR);
-	}
-
-	static ssize_t write_my_avoid_log(const char *fmt, ...)
-	{
-		if (my_avoid_fd == -1)
-		{
-			init_my_avoid_log();
-		}
-		if (my_avoid_fd != -1)
+		if (my_fd != -1)
 		{
 			va_list ap;
 			va_start(ap, fmt);
-			char buff[128];
+			char buff[512];
 			int count = vsprintf(buff, fmt, ap);
 			va_end(ap);
-			return write(my_avoid_fd, buff, count);
+			return write(my_fd, buff, count);
 		}
 		return 0;
 	}
 
-	static void init_my_beixing_log()
-	{
-		char path[32];
-		for (int i = 1; ;i++)
-		{
-			sprintf(path, "%s%s%d", HAL_BOARD_LOG_DIRECTORY, "/beixing_", i);
-			if (access(path, 0) == -1)
-			{
-				break;
-			}
-		}
-		my_beixing_fd = open(path, O_WRONLY | O_CREAT | O_TRUNC | O_APPEND, S_IRUSR | S_IWUSR);
-	}
-
-	static ssize_t write_my_beixing_log(const char *fmt, ...)
-	{
-		if (my_beixing_fd == -1)
-		{
-			init_my_beixing_log();
-		}
-		if (my_beixing_fd != -1)
-		{
-			va_list ap;
-			va_start(ap, fmt);
-			char buff[128];
-			int count = vsprintf(buff, fmt, ap);
-			va_end(ap);
-			return write(my_beixing_fd, buff, count);
-		}
-		return 0;
-	}
-
-	static void init_my_pro_log()
-	{
-		char path[32];
-		for (int i = 1; ;i++)
-		{
-			sprintf(path, "%s%s%d", HAL_BOARD_LOG_DIRECTORY, "/pro_", i);
-			if (access(path, 0) == -1)
-			{
-				break;
-			}
-		}
-		my_pro_fd = open(path, O_WRONLY | O_CREAT | O_TRUNC | O_APPEND, S_IRUSR | S_IWUSR);
-	}
-
-	static ssize_t write_my_pro_log(const char *fmt, ...)
-	{
-		if (my_pro_fd == -1)
-		{
-			init_my_pro_log();
-		}
-		if (my_pro_fd != -1)
-		{
-			va_list ap;
-			va_start(ap, fmt);
-			char buff[128];
-			int count = vsprintf(buff, fmt, ap);
-			va_end(ap);
-			return write(my_pro_fd, buff, count);
-		}
-		return 0;
-	}
 };
 
 
