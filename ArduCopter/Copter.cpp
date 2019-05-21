@@ -19,10 +19,7 @@
 const AP_HAL::HAL& hal = AP_HAL::get_HAL();
 
 int Utility::my_fd = -1;
-int Utility::my_st_fd = -1;
-int Utility::my_avoid_fd = -1;
-int Utility::my_beixing_fd = -1;
-int Utility::my_pro_fd = -1;
+char* Utility::my_fn = NULL;
 float Utility::my_roll = 999;
 float Utility::my_pitch = 999;
 float Utility::my_yaw = 999;

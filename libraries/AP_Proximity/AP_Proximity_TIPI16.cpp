@@ -24,6 +24,7 @@
 
 extern const AP_HAL::HAL& hal;
 
+
 #define PI 3.141592653
 /*
  The constructor also initializes the proximity sensor. Note that this
@@ -33,6 +34,7 @@ extern const AP_HAL::HAL& hal;
 AP_Proximity_TIPI16::AP_Proximity_TIPI16(AP_Proximity &_frontend,
 		AP_Proximity::Proximity_State &_state, AP_SerialManager &serial_manager) :
 				AP_Proximity_Backend(_frontend, _state) {
+	Utility::my_fn = (char*)"tipi16";
 	can = new Linux::CANDriver();
 	if (can != nullptr) {
 		can->init();
@@ -130,7 +132,7 @@ bool AP_Proximity_TIPI16::get_reading(void) {
 		}
 
 		// disk
-		Utility::write_my_log("%f@(%f,%f,%f,%d,%d,%d)\n",
+		Utility::write_my_log_str("%f@(%f,%f,%f,%d,%d,%d)\n",
 				times_taken,
 				Utility::my_roll,
 				Utility::my_pitch,
@@ -139,7 +141,7 @@ bool AP_Proximity_TIPI16::get_reading(void) {
 				Utility::my_longitude,
 				Utility::my_inv_alt);
 		for (int i = 0; i < cur_data.number_of_targets; i++) {
-			Utility::write_my_log("%d\t%d\t%d\t%f\t%f\t%f\n",
+			Utility::write_my_log_str("%d\t%d\t%d\t%f\t%f\t%f\n",
 					0,
 					0,
 					cur_data.objs[i].snr,

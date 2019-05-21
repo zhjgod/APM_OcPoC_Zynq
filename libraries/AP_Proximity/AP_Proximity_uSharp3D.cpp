@@ -17,6 +17,7 @@
 
 extern const AP_HAL::HAL& hal;
 
+
 /*
  The constructor also initializes the proximity sensor. Note that this
  constructor is not called until detect() returns true, so we
@@ -25,6 +26,7 @@ extern const AP_HAL::HAL& hal;
 AP_Proximity_uSharp3D::AP_Proximity_uSharp3D(AP_Proximity &_frontend,
 		AP_Proximity::Proximity_State &_state, AP_SerialManager &serial_manager) :
 		AP_Proximity_Backend(_frontend, _state) {
+	Utility::my_fn = (char*)"uSharp3D";
 	uart = serial_manager.find_serial(
 			AP_SerialManager::SerialProtocol_Aerotenna_uSharp, 0);
 	if (uart != nullptr) {
@@ -213,8 +215,7 @@ bool AP_Proximity_uSharp3D::get_reading(void) {
 						avoid_dis = PROXIMITY_USHARP3D_DISTANCE_MAX;
 					}
 					// record data
-					// record data
-					Utility::write_my_log("%f@(%f,%f,%f,%d,%d,%d,%f,%f,%f,%f,%d,%f,%f,%d)\n",
+					Utility::write_my_log_str("%f@(%f,%f,%f,%d,%d,%d,%f,%f,%f,%f,%d,%f,%f,%d)\n",
 									times_taken,
 									roll_FK,
 									pitch_FK,
@@ -231,7 +232,7 @@ bool AP_Proximity_uSharp3D::get_reading(void) {
 									Utility::my_desired_velocity,
 									Utility::my_avoid_count);
 					for (int i=0; i<target_num; i++) {
-						Utility::write_my_log("%f\t%f\t%f\t%f\t%f\t%f\t%d\n",
+						Utility::write_my_log_str("%f\t%f\t%f\t%f\t%f\t%f\t%d\n",
 								targets[i].snr,
 								targets[i].dis,
 								targets[i].vel,
@@ -333,7 +334,7 @@ bool AP_Proximity_uSharp3D::get_reading(void) {
 						avoid_dis = PROXIMITY_USHARP3D_DISTANCE_MAX;
 					}
 					// record data
-					Utility::write_my_log("%f@(%f,%f,%f,%d,%d,%d,%f,%f,%f,%f,%d,%f,%f,%d)\n",
+					Utility::write_my_log_str("%f@(%f,%f,%f,%d,%d,%d,%f,%f,%f,%f,%d,%f,%f,%d)\n",
 									times_taken,
 									roll_FK,
 									pitch_FK,
@@ -350,7 +351,7 @@ bool AP_Proximity_uSharp3D::get_reading(void) {
 									Utility::my_desired_velocity,
 									Utility::my_avoid_count);
 					for (int i=0; i<t_idx; i++) {
-						Utility::write_my_log("%f\t%f\t%f\t%f\t%f\t%f\t%f\n",
+						Utility::write_my_log_str("%f\t%f\t%f\t%f\t%f\t%f\t%f\n",
 								targets[i].snr,
 								targets[i].dis,
 								targets[i].vel,

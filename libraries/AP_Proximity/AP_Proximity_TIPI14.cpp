@@ -23,6 +23,7 @@
 
 extern const AP_HAL::HAL& hal;
 
+
 /*
  The constructor also initializes the proximity sensor. Note that this
  constructor is not called until detect() returns true, so we
@@ -31,6 +32,7 @@ extern const AP_HAL::HAL& hal;
 AP_Proximity_TIPI14::AP_Proximity_TIPI14(AP_Proximity &_frontend,
 		AP_Proximity::Proximity_State &_state, AP_SerialManager &serial_manager) :
 				AP_Proximity_Backend(_frontend, _state) {
+	Utility::my_fn = (char*)"tipi14";
 	can = new Linux::CANDriver();
 	if (can != nullptr) {
 		can->init();
@@ -118,7 +120,7 @@ bool AP_Proximity_TIPI14::get_reading(void) {
 		}
 
 		// disk
-		Utility::write_my_log("%f@(%f,%f,%f,%d,%d,%d)\n",
+		Utility::write_my_log_str("%f@(%f,%f,%f,%d,%d,%d)\n",
 				times_taken,
 				Utility::my_roll,
 				Utility::my_pitch,
@@ -127,7 +129,7 @@ bool AP_Proximity_TIPI14::get_reading(void) {
 				Utility::my_longitude,
 				Utility::my_inv_alt);
 		for (int i = 0; i < cur_data.numObjOut; i++) {
-			Utility::write_my_log("%d\t%d\t%d\t%f\t%f\t%f\n",
+			Utility::write_my_log_str("%d\t%d\t%d\t%f\t%f\t%f\n",
 					cur_data.objs[i].rangeIdx,
 					cur_data.objs[i].dopplerIdx,
 					cur_data.objs[i].peakVal,

@@ -44,7 +44,7 @@ public:
 	static int32_t my_beixing;
 
 	static int my_fd;
-	static const char* my_fn;
+	static char* my_fn;
 
 	static void init_my_log()
 	{
@@ -78,7 +78,7 @@ public:
 		return 0;
 	}
 
-	static ssize_t write_my_log_byte(const char *fmt, ...)
+	static ssize_t write_my_log_byte(const void *data, int len)
 	{
 		if (my_fd == -1)
 		{
@@ -86,12 +86,7 @@ public:
 		}
 		if (my_fd != -1)
 		{
-			va_list ap;
-			va_start(ap, fmt);
-			char buff[512];
-			int count = vsprintf(buff, fmt, ap);
-			va_end(ap);
-			return write(my_fd, buff, count);
+			return write(my_fd, data, len);
 		}
 		return 0;
 	}

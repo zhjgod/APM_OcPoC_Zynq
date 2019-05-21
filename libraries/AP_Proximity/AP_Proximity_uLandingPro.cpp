@@ -23,6 +23,7 @@
 
 extern const AP_HAL::HAL& hal;
 
+
 /*
  The constructor also initializes the proximity sensor. Note that this
  constructor is not called until detect() returns true, so we
@@ -31,6 +32,7 @@ extern const AP_HAL::HAL& hal;
 AP_Proximity_uLandingPro::AP_Proximity_uLandingPro(AP_Proximity &_frontend,
 		AP_Proximity::Proximity_State &_state, AP_SerialManager &serial_manager) :
 		AP_Proximity_Backend(_frontend, _state) {
+	Utility::my_fn = (char*)"uLandingPro";
 	uart = serial_manager.find_serial(
 			AP_SerialManager::SerialProtocol_Aerotenna_uSharp, 0);
 	if (uart != nullptr) {
@@ -143,9 +145,9 @@ bool AP_Proximity_uLandingPro::get_reading(void) {
 				if (((cal ^ 0xFF) & 0xFF) == buf[31]) {
 					hal.console->printf("********************* one frame %d \n", Utility::my_beixing);
 					for (int j = 0; j < 32; j++) {
-						Utility::write_my_pro_log("%02X ", buf[j]);
+						Utility::write_my_log_str("%02X ", buf[j]);
 					}
-					Utility::write_my_pro_log("%d %f %f %f %d\n", Utility::my_beixing, Utility::my_roll, Utility::my_pitch, Utility::my_yaw, Utility::my_inv_alt);
+					Utility::write_my_log_str("%d %f %f %f %d\n", Utility::my_beixing, Utility::my_roll, Utility::my_pitch, Utility::my_yaw, Utility::my_inv_alt);
 				} else {
 					hal.console->printf("********************* error frame \n");
 				}
