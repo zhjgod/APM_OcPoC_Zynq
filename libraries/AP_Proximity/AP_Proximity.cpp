@@ -26,6 +26,8 @@
 #include "AP_Proximity_uSharp3D.h"
 #include "AP_Proximity_attitude.h"
 #include "AP_Proximity_SITL.h"
+#include "AP_Proximity_uLandingInfTest.h"
+#include "AP_Proximity_vol.h"
 
 extern const AP_HAL::HAL &hal;
 
@@ -366,6 +368,16 @@ void AP_Proximity::detect_instance(uint8_t instance)
         drivers[instance] = new AP_Proximity_Attitude(*this, state[instance], serial_manager);
         return;
     }
+	if (type == Proximity_Type_InfTest) {
+		state[instance].instance = instance;
+        drivers[instance] = new AP_Proximity_uLandingInfTest(*this, state[instance], serial_manager);
+        return;
+	}
+	if (type == Proximity_Type_Vol) {
+		state[instance].instance = instance;
+        drivers[instance] = new AP_Proximity_vol(*this, state[instance]);
+        return;
+	}
 
 #if CONFIG_HAL_BOARD == HAL_BOARD_SITL
     if (type == Proximity_Type_SITL) {

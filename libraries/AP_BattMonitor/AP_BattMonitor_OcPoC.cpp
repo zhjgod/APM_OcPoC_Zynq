@@ -1,11 +1,11 @@
 #include <AP_HAL/AP_HAL.h>
+#include "../ArduCopter/utility.h"
+
 
 #if CONFIG_HAL_BOARD == HAL_BOARD_LINUX && \
     CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_OCPOC_ZYNQ
 
 #include "AP_BattMonitor_OcPoC.h"
-
-extern const AP_HAL::HAL &hal;
 
 void AP_BattMonitor_OcPoC::init(void)
 {

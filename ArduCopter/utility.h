@@ -51,7 +51,7 @@ public:
 		char path[64];
 		for (int i = 1; ;i++)
 		{
-			sprintf(path, "%s%s%d", HAL_BOARD_LOG_DIRECTORY, my_fn, i);
+			sprintf(path, "%s/%s_%d", HAL_BOARD_LOG_DIRECTORY, my_fn, i);
 			if (access(path, 0) == -1)
 			{
 				break;
