@@ -65,8 +65,10 @@ bool AP_RangeFinder_uLanding::get_reading(uint16_t &reading_cm)
 #endif
 
     int16_t nbytes = uart->available();
+	hal.console->printf("read %d bytes.\n", nbytes);
     while (nbytes-- > 0) {
         uint8_t c = uart->read();
+		hal.console->printf("%02X ", c);
         // ok, we have located start byte
         if (c == ulanding_hdr && index == 0) {
             linebuf_len = 0;
@@ -98,6 +100,7 @@ bool AP_RangeFinder_uLanding::get_reading(uint16_t &reading_cm)
 #endif
         }
     }
+	hal.console->printf("\n");
 
     if (count == 0) {
         return false;

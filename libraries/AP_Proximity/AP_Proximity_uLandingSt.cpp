@@ -23,7 +23,6 @@
 
 extern const AP_HAL::HAL& hal;
 
-
 /*
  The constructor also initializes the proximity sensor. Note that this
  constructor is not called until detect() returns true, so we
@@ -32,7 +31,7 @@ extern const AP_HAL::HAL& hal;
 AP_Proximity_uLandingSt::AP_Proximity_uLandingSt(AP_Proximity &_frontend,
 		AP_Proximity::Proximity_State &_state, AP_SerialManager &serial_manager) :
 		AP_Proximity_Backend(_frontend, _state) {
-	Utility::my_fn = (char*)"st_adc";
+	Utility::my_fn = (char*)"uLandingSTADC";
 	uart = serial_manager.find_serial(
 			AP_SerialManager::SerialProtocol_Aerotenna_uSharp, 0);
 	if (uart != nullptr) {
@@ -55,7 +54,8 @@ AP_Proximity_uLandingSt::AP_Proximity_uLandingSt(AP_Proximity &_frontend,
 		_distance_valid[i] = true;
 	}
 
-	buf = new uint8_t[2740];
+	pack_len = 4 + 676 * 2 + 676 * 2 + 104 * 2 + 104 * 2 + 4 * 8;
+	buf = new uint8_t[pack_len];
 	idx = 0;
 	buf1 = new uint8_t[128];
 	idx1 = 0;
@@ -153,10 +153,10 @@ bool AP_Proximity_uLandingSt::get_reading(void) {
 			// check tail
 			if (buf[idx - 1] == 0xFE && buf[idx - 2] == 0xEF && buf[idx - 3] == 0xFF && buf[idx - 4] == 0xEE) {
 				// check length
-				if (idx == 2740) {
+				if (idx == pack_len) {
 					hal.console->printf("********************* one frame \n");
 					// save
-					Utility::write_my_log_byte(buf, 2740);
+					Utility::write_my_log_byte(buf, pack_len);
 					Utility::write_my_log_byte(&Utility::my_beixing, 4);
 					Utility::write_my_log_byte(&Utility::my_roll, 4);
 					Utility::write_my_log_byte(&Utility::my_pitch, 4);
@@ -165,7 +165,7 @@ bool AP_Proximity_uLandingSt::get_reading(void) {
 					hal.console->printf("********************* error frame \n");
 				}
 				idx = 0;
-			} else if (idx > 2740) {
+			} else if (idx > pack_len) {
 				hal.console->printf("********************* miss tail \n");
 				idx = 0;
 			}

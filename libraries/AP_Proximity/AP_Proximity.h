@@ -48,10 +48,13 @@ public:
 		Proximity_Type_TIPI16 = 22,
 		Proximity_Type_uLandingPro = 23,
 		Proximity_Type_uLandingSt = 24,
-		Proximity_Type_uSharp3D = 25,
+		Proximity_Type_uSharp3D_MT = 25,
 		Proximity_Type_Beixing = 26,
 		Proximity_Type_InfTest = 27,
 		Proximity_Type_Vol = 28,
+		Proximity_Type_uSharp3D_M = 29,
+		Proximity_Type_uSharp3D_S = 30,
+		Proximity_Type_uLandingADCTest = 31,
     };
 
     enum Proximity_Status {

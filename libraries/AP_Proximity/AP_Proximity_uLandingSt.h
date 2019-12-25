@@ -36,6 +36,7 @@ private:
 
     uint8_t* buf;
     int32_t idx;
+	int32_t pack_len;
 
 	uint8_t* buf1;
 	int32_t idx1;

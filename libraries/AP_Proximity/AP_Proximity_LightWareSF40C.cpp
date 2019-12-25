@@ -3,12 +3,10 @@
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
-
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -411,7 +409,7 @@ bool AP_Proximity_LightWareSF40C::process_reply()
             if (convert_angle_to_sector(angle_deg, sector)) {
                 _angle[sector] = angle_deg;
                 _distance[sector] = distance_m;
-                _distance_valid[sector] = is_positive(distance_m);
+                _distance_valid[sector] = true;
                 _last_distance_received_ms = AP_HAL::millis();
                 success = true;
                 // update boundary used for avoidance

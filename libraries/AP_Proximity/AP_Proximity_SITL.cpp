@@ -3,12 +3,10 @@
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
-
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -37,10 +35,6 @@ AP_Proximity_SITL::AP_Proximity_SITL(AP_Proximity &_frontend,
     fence_count = (AP_Int8 *)AP_Param::find("FENCE_TOTAL", &ptype);
     if (fence_count == nullptr || ptype != AP_PARAM_INT8) {
         AP_HAL::panic("Proximity_SITL: Failed to find FENCE_TOTAL");
-    }
-    fence_alt_max = (AP_Float *)AP_Param::find("FENCE_ALT_MAX", &ptype);
-    if (fence_alt_max == nullptr || ptype != AP_PARAM_FLOAT) {
-        AP_HAL::panic("Proximity_SITL: Failed to find FENCE_ALT_MAX");
     }
 }
 
@@ -127,14 +121,6 @@ float AP_Proximity_SITL::distance_max() const
 float AP_Proximity_SITL::distance_min() const
 {
     return 0.0f;
-}
-
-// get distance upwards in meters. returns true on success
-bool AP_Proximity_SITL::get_upward_distance(float &distance) const
-{
-    // return distance to fence altitude
-    distance = MAX(0.0f, fence_alt_max->get() - sitl->height_agl);
-    return true;
 }
 
 #endif // CONFIG_HAL_BOARD

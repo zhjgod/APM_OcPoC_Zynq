@@ -13,7 +13,6 @@
 #include "../ArduCopter/utility.h"
 #include <math.h>
 
-#include "ObstacleAvoiding.h"
 
 extern const AP_HAL::HAL& hal;
 

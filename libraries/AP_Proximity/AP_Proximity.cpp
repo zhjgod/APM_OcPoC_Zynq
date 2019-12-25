@@ -14,19 +14,17 @@
  */
 
 #include "AP_Proximity.h"
+#include "AP_Proximity_RangeFinder.h"
 #include "AP_Proximity_LightWareSF40C.h"
 #include "AP_Proximity_TeraRangerTower.h"
-#include "AP_Proximity_RangeFinder.h"
 #include "AP_Proximity_MAV.h"
-#include "AP_Proximity_uSharpPatch.h"
-#include "AP_Proximity_TIPI14.h"
-#include "AP_Proximity_TIPI16.h"
-#include "AP_Proximity_uLandingPro.h"
 #include "AP_Proximity_uLandingSt.h"
-#include "AP_Proximity_uSharp3D.h"
-#include "AP_Proximity_attitude.h"
+#include "AP_Proximity_uSharp3D_M.h"
+#include "AP_Proximity_uSharp3D_MT.h"
+#include "AP_Proximity_uSharp3D_S.h"
 #include "AP_Proximity_SITL.h"
 #include "AP_Proximity_uLandingInfTest.h"
+#include "AP_Proximity_uLandingADCTest.h"
 #include "AP_Proximity_vol.h"
 
 extern const AP_HAL::HAL &hal;
@@ -333,41 +331,56 @@ void AP_Proximity::detect_instance(uint8_t instance)
         drivers[instance] = new AP_Proximity_RangeFinder(*this, state[instance]);
         return;
     }
-    if (type == Proximity_Type_uSharpPatch) {
-        state[instance].instance = instance;
-        drivers[instance] = new AP_Proximity_uSharpPatch(*this, state[instance], serial_manager);
-        return;
-    }
-    if (type == Proximity_Type_TIPI14) {
-    	state[instance].instance = instance;
-    	drivers[instance] = new AP_Proximity_TIPI14(*this, state[instance], serial_manager);
-    	return;
-    }
-    if (type == Proximity_Type_TIPI16) {
-        state[instance].instance = instance;
-        drivers[instance] = new AP_Proximity_TIPI16(*this, state[instance], serial_manager);
-        return;
-    }
-    if (type == Proximity_Type_uLandingPro) {
-        state[instance].instance = instance;
-        drivers[instance] = new AP_Proximity_uLandingPro(*this, state[instance], serial_manager);
-        return;
-    }
+    //if (type == Proximity_Type_uSharpPatch) {
+    //    state[instance].instance = instance;
+    //    drivers[instance] = new AP_Proximity_uSharpPatch(*this, state[instance], serial_manager);
+    //    return;
+    //}
+    //if (type == Proximity_Type_TIPI14) {
+    //	state[instance].instance = instance;
+    //	drivers[instance] = new AP_Proximity_TIPI14(*this, state[instance], serial_manager);
+    //	return;
+    //}
+    //if (type == Proximity_Type_TIPI16) {
+    //    state[instance].instance = instance;
+    //    drivers[instance] = new AP_Proximity_TIPI16(*this, state[instance], serial_manager);
+    //    return;
+    //}
+    //if (type == Proximity_Type_uLandingPro) {
+    //    state[instance].instance = instance;
+    //    drivers[instance] = new AP_Proximity_uLandingPro(*this, state[instance], serial_manager);
+    //    return;
+    //}
     if (type == Proximity_Type_uLandingSt) {
         state[instance].instance = instance;
         drivers[instance] = new AP_Proximity_uLandingSt(*this, state[instance], serial_manager);
         return;
     }
-    if (type == Proximity_Type_uSharp3D) {
+	if (type == Proximity_Type_uLandingADCTest) {
         state[instance].instance = instance;
-        drivers[instance] = new AP_Proximity_uSharp3D(*this, state[instance], serial_manager);
+        drivers[instance] = new AP_Proximity_uLandingADCTest(*this, state[instance], serial_manager);
         return;
     }
-    if (type == Proximity_Type_Beixing) {
+    if (type == Proximity_Type_uSharp3D_MT) {
         state[instance].instance = instance;
-        drivers[instance] = new AP_Proximity_Attitude(*this, state[instance], serial_manager);
+        drivers[instance] = new AP_Proximity_uSharp3D_MT(*this, state[instance], serial_manager);
         return;
     }
+	if (type == Proximity_Type_uSharp3D_M) {
+        state[instance].instance = instance;
+        drivers[instance] = new AP_Proximity_uSharp3D_M(*this, state[instance], serial_manager);
+        return;
+    }
+	if (type == Proximity_Type_uSharp3D_S) {
+        state[instance].instance = instance;
+        drivers[instance] = new AP_Proximity_uSharp3D_S(*this, state[instance], serial_manager);
+        return;
+    }
+    //if (type == Proximity_Type_Beixing) {
+    //    state[instance].instance = instance;
+    //    drivers[instance] = new AP_Proximity_Attitude(*this, state[instance], serial_manager);
+    //    return;
+    //}
 	if (type == Proximity_Type_InfTest) {
 		state[instance].instance = instance;
         drivers[instance] = new AP_Proximity_uLandingInfTest(*this, state[instance], serial_manager);

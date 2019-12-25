@@ -3,12 +3,10 @@
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
-
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -36,22 +34,11 @@ AP_Proximity_MAV::AP_Proximity_MAV(AP_Proximity &_frontend,
 void AP_Proximity_MAV::update(void)
 {
     // check for timeout and set health status
-    if ((_last_update_ms == 0 || (AP_HAL::millis() - _last_update_ms > PROXIMITY_MAV_TIMEOUT_MS)) &&
-        (_last_upward_update_ms == 0 || (AP_HAL::millis() - _last_upward_update_ms > PROXIMITY_MAV_TIMEOUT_MS))) {
+    if ((_last_update_ms == 0) || (AP_HAL::millis() - _last_update_ms > PROXIMITY_MAV_TIMEOUT_MS)) {
         set_status(AP_Proximity::Proximity_NoData);
     } else {
         set_status(AP_Proximity::Proximity_Good);
     }
-}
-
-// get distance upwards in meters. returns true on success
-bool AP_Proximity_MAV::get_upward_distance(float &distance) const
-{
-    if ((_last_upward_update_ms != 0) && (AP_HAL::millis() - _last_upward_update_ms <= PROXIMITY_MAV_TIMEOUT_MS)) {
-        distance = _distance_upward;
-        return true;
-    }
-    return false;
 }
 
 // handle mavlink DISTANCE_SENSOR messages
@@ -70,11 +57,5 @@ void AP_Proximity_MAV::handle_msg(mavlink_message_t *msg)
         _distance_max = packet.max_distance / 100.0f;
         _last_update_ms = AP_HAL::millis();
         update_boundary_for_sector(sector);
-    }
-
-    // store upward distance
-    if (packet.orientation == MAV_SENSOR_ROTATION_PITCH_90) {
-        _distance_upward = packet.current_distance / 100.0f;
-        _last_upward_update_ms = AP_HAL::millis();
     }
 }
