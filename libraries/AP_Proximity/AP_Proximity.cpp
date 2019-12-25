@@ -24,6 +24,7 @@
 #include "AP_Proximity_uLandingPro.h"
 #include "AP_Proximity_uLandingSt.h"
 #include "AP_Proximity_uSharp3D.h"
+#include "AP_Proximity_uSharp3D_MT.h"
 #include "AP_Proximity_attitude.h"
 #include "AP_Proximity_SITL.h"
 #include "AP_Proximity_uLandingSt_by.h"
@@ -364,7 +365,7 @@ void AP_Proximity::detect_instance(uint8_t instance)
     }
     if (type == Proximity_Type_uSharp3D) {
         state[instance].instance = instance;
-        drivers[instance] = new AP_Proximity_uSharp3D(*this, state[instance], serial_manager);
+        drivers[instance] = new AP_Proximity_uSharp3D_MT(*this, state[instance], serial_manager);
         return;
     }
     if (type == Proximity_Type_Beixing) {
