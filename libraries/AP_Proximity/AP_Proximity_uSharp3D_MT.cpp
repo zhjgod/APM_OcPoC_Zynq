@@ -32,6 +32,8 @@ AP_Proximity_uSharp3D_MT::AP_Proximity_uSharp3D_MT(AP_Proximity &_frontend,
 		uart->begin(
 				serial_manager.find_baudrate(
 						AP_SerialManager::SerialProtocol_Aerotenna_uSharp, 0));
+	} else {
+		hal.console->printf("find_serial null \n");
 	}
 	uart_wifi = serial_manager.find_serial(
 			AP_SerialManager::SerialProtocol_Wifi, 0);

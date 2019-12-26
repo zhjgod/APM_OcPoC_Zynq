@@ -263,6 +263,9 @@ uint32_t AP_SerialManager::find_baudrate(enum SerialProtocol protocol, uint8_t i
     for(uint8_t i=0; i<SERIALMANAGER_NUM_PORTS; i++) {
         if (protocol_match(protocol, (enum SerialProtocol)state[i].protocol.get())) {
             if (found_instance == instance) {
+				if (protocol == SerialProtocol_Aerotenna_uSharp) {
+					hal.console->printf("find_baudrate uSharp: %d\n", map_baudrate(state[i].baud));
+				}
                 return map_baudrate(state[i].baud);
             }
             found_instance++;
