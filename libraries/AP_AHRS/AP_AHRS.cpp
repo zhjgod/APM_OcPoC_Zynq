@@ -194,11 +194,13 @@ Vector2f AP_AHRS::groundspeed_vector(void)
     float airspeed;
     bool gotAirspeed = airspeed_estimate_true(&airspeed);
     bool gotGPS = (_gps.status() >= AP_GPS::GPS_OK_FIX_2D);
+	hal.console->printf("gotAirspeed:%d, gotGPS:%d \n", gotAirspeed, gotGPS);
     if (gotAirspeed) {
         Vector3f wind = wind_estimate();
         Vector2f wind2d = Vector2f(wind.x, wind.y);
         Vector2f airspeed_vector = Vector2f(cosf(yaw), sinf(yaw)) * airspeed;
         gndVelADS = airspeed_vector - wind2d;
+		hal.console->printf("wind.x:%f, wind.y:%f, yaw:%f, airspeed:%f \n", wind.x, wind.y, yaw, airspeed);
     }
 
     // Generate estimate of ground speed vector using GPS
