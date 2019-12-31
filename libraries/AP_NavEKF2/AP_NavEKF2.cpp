@@ -638,6 +638,7 @@ bool NavEKF2::InitialiseFilter(void)
                 num_cores++;
             }
         }
+		hal.console->printf("ekf2 num_cores:%d \n", num_cores);
 
         if (hal.util->available_memory() < sizeof(NavEKF2_core)*num_cores + 4096) {
             GCS_MAVLINK::send_statustext_all(MAV_SEVERITY_CRITICAL, "NavEKF2: not enough memory");

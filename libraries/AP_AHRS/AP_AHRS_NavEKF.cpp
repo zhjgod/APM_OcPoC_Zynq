@@ -1105,12 +1105,10 @@ bool AP_AHRS_NavEKF::get_filter_status(nav_filter_status &status) const
 
     case EKF_TYPE2:
     default:
-		hal.console->printf("ekf2 \n");
         EKF2.getFilterStatus(-1,status);
         return true;
 
     case EKF_TYPE3:
-		hal.console->printf("ekf3 \n");
         EKF3.getFilterStatus(-1,status);
         return true;
 
