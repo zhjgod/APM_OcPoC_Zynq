@@ -395,10 +395,10 @@ bool Copter::ekf_position_ok()
 
     // if disarmed we accept a predicted horizontal position
     if (!motors->armed()) {
-		hal.console->printf("filt_status.flags.horiz_pos_abs:%d,  filt_status.flags.pred_horiz_pos_abs:%d \n", filt_status.flags.horiz_pos_abs, filt_status.flags.pred_horiz_pos_abs);
+		//hal.console->printf("filt_status.flags.horiz_pos_abs:%d,  filt_status.flags.pred_horiz_pos_abs:%d \n", filt_status.flags.horiz_pos_abs, filt_status.flags.pred_horiz_pos_abs);
         return ((filt_status.flags.horiz_pos_abs || filt_status.flags.pred_horiz_pos_abs));
     } else {
-		hal.console->printf("filt_status.flags.horiz_pos_abs:%d,  filt_status.flags.const_pos_mode:%d \n", filt_status.flags.horiz_pos_abs, filt_status.flags.const_pos_mode);
+		//hal.console->printf("filt_status.flags.horiz_pos_abs:%d,  filt_status.flags.const_pos_mode:%d \n", filt_status.flags.horiz_pos_abs, filt_status.flags.const_pos_mode);
         // once armed we require a good absolute position and EKF must not be in const_pos_mode
         return (filt_status.flags.horiz_pos_abs && !filt_status.flags.const_pos_mode);
     }
