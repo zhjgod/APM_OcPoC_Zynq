@@ -394,6 +394,7 @@ void Copter::fourhundred_hz_logging()
 // should be run at 10hz
 void Copter::ten_hz_logging_loop()
 {
+	hal.console->printf("ground speed. gps:%f, ahrs:%f \n", gps.ground_speed(), ahrs.groundspeed());
     // log attitude data if we're not already logging at the higher rate
     if (should_log(MASK_LOG_ATTITUDE_MED) && !should_log(MASK_LOG_ATTITUDE_FAST)) {
         Log_Write_Attitude();
