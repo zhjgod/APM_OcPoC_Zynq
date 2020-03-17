@@ -321,7 +321,7 @@ void AC_Avoid::adjust_velocity_polygon(float kP, float accel_cmss, Vector2f &des
     float margin_cm = MAX(margin * 100.0f, 0);
 
     uint16_t i, j;
-    for (i = 1, j = num_points-1; i < num_points; j = i++) {
+    for (i = 0, j = num_points-1; i < num_points; j = i++) {
         // end points of current edge
         Vector2f start = boundary[j];
         Vector2f end = boundary[i];
@@ -335,7 +335,7 @@ void AC_Avoid::adjust_velocity_polygon(float kP, float accel_cmss, Vector2f &des
             limit_direction /= limit_distance;
             limit_velocity(kP, accel_cmss, safe_vel, limit_direction, MAX(limit_distance - margin_cm,0.0f));
 			if (Utility::my_avoid_flag == 20) {
-				Utility::my_avoid_flag += i;
+				Utility::my_avoid_flag += i + 1;
 			}
         } else {
             // We are exactly on the edge - treat this as a fence breach.
