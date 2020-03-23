@@ -160,7 +160,6 @@ void NavEKF2_core::setAidingMode()
     PV_AidingModePrev = PV_AidingMode;
 
     // Determine if we should change aiding mode
-    hal.console->printf("PV_AidingMode:%d imuSampleTime_ms:%d lastPosPassTime_ms:%d \n", PV_AidingMode, imuSampleTime_ms, lastPosPassTime_ms);
     switch (PV_AidingMode) {
     case AID_NONE: {
         // Don't allow filter to start position or velocity aiding until the tilt and yaw alignment is complete
