@@ -480,7 +480,6 @@ void  NavEKF2_core::updateFilterStatus(void)
     bool hgtNotAccurate = (frontend->_altSource == 2) && !validOrigin;
 
     // set individual flags
-    hal.console->printf("filterHealthy:%d someHorizRefData:%d, doingNormalGpsNav:%d\n", filterHealthy, someHorizRefData, doingNormalGpsNav);
     filterStatus.flags.attitude = !stateStruct.quat.is_nan() && filterHealthy;   // attitude valid (we need a better check)
     filterStatus.flags.horiz_vel = someHorizRefData && filterHealthy;      // horizontal velocity estimate valid
     filterStatus.flags.vert_vel = someVertRefData && filterHealthy;        // vertical velocity estimate valid
