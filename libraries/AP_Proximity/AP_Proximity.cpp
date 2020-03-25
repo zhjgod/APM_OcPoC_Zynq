@@ -28,6 +28,8 @@
 #include "AP_Proximity_attitude.h"
 #include "AP_Proximity_SITL.h"
 #include "AP_Proximity_uLandingSt_by.h"
+#include "AP_Proximity_uSharp60.h"
+#include "AP_Proximity_usharp60_by.h"
 
 extern const AP_HAL::HAL &hal;
 
@@ -371,6 +373,16 @@ void AP_Proximity::detect_instance(uint8_t instance)
     if (type == Proximity_Type_Beixing) {
         state[instance].instance = instance;
         drivers[instance] = new AP_Proximity_Attitude(*this, state[instance], serial_manager);
+        return;
+    }
+	if (type == Proximity_Type_uSharp60) {
+        state[instance].instance = instance;
+        drivers[instance] = new AP_Proximity_uSharp60(*this, state[instance], serial_manager);
+        return;
+    }
+ 	if (type == Proximity_Type_usharp60_by) {
+        state[instance].instance = instance;
+        drivers[instance] = new AP_Proximity_usharp60_by(*this, state[instance], serial_manager);
         return;
     }
 
