@@ -249,14 +249,14 @@ bool AP_Proximity_usharp60_by::send_can_data(void) {
 	targetPkg[0] = tempU16 & 0xFF;
 	targetPkg[1] = (tempU16 >> 8) & 0xFF;
 
-	id = 0x03740403;
+	id = CAN_EFF_FLAG | 0x03740403;
 	memcpy(data,targetPkg,8);
 	
 	can->can_write(data, 8, id);
 
 	hal.console->printf("usharp60_by send:%08x %02x %02x %02x %02x %02x %02x %02x %02x \n",id,data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7]);
 
-	id = 0x0374041B;
+	id = CAN_EFF_FLAG | 0x0374041B;
 	memcpy(data,targetPkg+8,8);
 	
 	can->can_write(data, 8, id);
