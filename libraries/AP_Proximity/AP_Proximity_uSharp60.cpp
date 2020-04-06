@@ -202,7 +202,7 @@ bool AP_Proximity_uSharp60::get_reading(void) {
 						avoid_dis = final_dis / 100.0;
 						//
 						for (int j = 0; j < target_num; j++) {
-							uint8_t idx = 11 + 9 * j;
+							uint16_t idx = 11 + 9 * j;
 							//
 							uint16_t dis = buf[idx] * 256 + buf[idx + 1];
 							//
