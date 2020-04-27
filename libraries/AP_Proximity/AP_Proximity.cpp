@@ -30,6 +30,7 @@
 #include "AP_Proximity_uLandingSt_by.h"
 #include "AP_Proximity_uSharp60.h"
 #include "AP_Proximity_usharp60_by.h"
+#include "AP_Proximity_usharp60_mncan.h"
 
 extern const AP_HAL::HAL &hal;
 
@@ -311,6 +312,9 @@ void AP_Proximity::handle_msg(mavlink_message_t *msg)
 void AP_Proximity::detect_instance(uint8_t instance)
 {
     uint8_t type = _type[instance];
+
+	//type = Proximity_Type_usharp60_mncan;
+
     if (type == Proximity_Type_SF40C) {
         if (AP_Proximity_LightWareSF40C::detect(serial_manager)) {
             state[instance].instance = instance;
@@ -383,6 +387,11 @@ void AP_Proximity::detect_instance(uint8_t instance)
  	if (type == Proximity_Type_usharp60_by) {
         state[instance].instance = instance;
         drivers[instance] = new AP_Proximity_usharp60_by(*this, state[instance], serial_manager);
+        return;
+    }
+	if (type == Proximity_Type_usharp60_mncan) {
+        state[instance].instance = instance;
+        drivers[instance] = new AP_Proximity_usharp60_mncan(*this, state[instance], serial_manager);
         return;
     }
 

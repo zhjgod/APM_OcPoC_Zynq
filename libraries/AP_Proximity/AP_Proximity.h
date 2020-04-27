@@ -53,6 +53,7 @@ public:
 		Proximity_Type_uLandingSt_by = 31,
 	Proximity_Type_uSharp60 = 32,
 	Proximity_Type_usharp60_by = 33,
+	Proximity_Type_usharp60_mncan = 34,
     };
 
     enum Proximity_Status {
