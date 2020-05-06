@@ -31,6 +31,7 @@
 #include "AP_Proximity_uSharp60.h"
 #include "AP_Proximity_usharp60_by.h"
 #include "AP_Proximity_usharp60_mncan.h"
+#include "AP_Proximity_usharp60_su.h"
 
 extern const AP_HAL::HAL &hal;
 
@@ -313,7 +314,8 @@ void AP_Proximity::detect_instance(uint8_t instance)
 {
     uint8_t type = _type[instance];
 
-	//type = Proximity_Type_usharp60_mncan;
+	//type = Proximity_Type_usharp60_su;
+	//type =Proximity_Type_uSharp60;
 
     if (type == Proximity_Type_SF40C) {
         if (AP_Proximity_LightWareSF40C::detect(serial_manager)) {
@@ -390,10 +392,15 @@ void AP_Proximity::detect_instance(uint8_t instance)
         return;
     }
 	if (type == Proximity_Type_usharp60_mncan) {
+		state[instance].instance = instance;
+		drivers[instance] = new AP_Proximity_usharp60_mncan(*this, state[instance], serial_manager);
+		return;
+	}
+ 	if (type == Proximity_Type_usharp60_su) {
         state[instance].instance = instance;
-        drivers[instance] = new AP_Proximity_usharp60_mncan(*this, state[instance], serial_manager);
-        return;
-    }
+        drivers[instance] = new AP_Proximity_usharp60_su(*this, state[instance], serial_manager);
+		return;
+	}
 
 #if CONFIG_HAL_BOARD == HAL_BOARD_SITL
     if (type == Proximity_Type_SITL) {
@@ -402,6 +409,7 @@ void AP_Proximity::detect_instance(uint8_t instance)
         return;
     }
 #endif
+	return;
 }
 
 // get distance in meters in a particular direction in degrees (0 is forward, clockwise)
