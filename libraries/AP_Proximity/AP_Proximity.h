@@ -54,7 +54,9 @@ public:
 	Proximity_Type_uSharp60 = 32,
 	Proximity_Type_usharp60_by = 33,
 	Proximity_Type_usharp60_mncan = 34,
-	Proximity_Type_usharp60_su = 35
+	Proximity_Type_usharp60_su = 35,//usharp60 standard uart
+	Proximity_Type_usharp60_sc = 36//usharp60 standard can
+
     };
 
     enum Proximity_Status {

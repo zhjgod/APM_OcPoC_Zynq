@@ -32,6 +32,7 @@
 #include "AP_Proximity_usharp60_by.h"
 #include "AP_Proximity_usharp60_mncan.h"
 #include "AP_Proximity_usharp60_su.h"
+#include "AP_Proximity_usharp60_sc.h"
 
 extern const AP_HAL::HAL &hal;
 
@@ -314,7 +315,7 @@ void AP_Proximity::detect_instance(uint8_t instance)
 {
     uint8_t type = _type[instance];
 
-	//type = Proximity_Type_usharp60_su;
+	type = Proximity_Type_usharp60_sc;
 	//type =Proximity_Type_uSharp60;
 
     if (type == Proximity_Type_SF40C) {
@@ -399,6 +400,12 @@ void AP_Proximity::detect_instance(uint8_t instance)
  	if (type == Proximity_Type_usharp60_su) {
         state[instance].instance = instance;
         drivers[instance] = new AP_Proximity_usharp60_su(*this, state[instance], serial_manager);
+		return;
+	}
+
+ 	if (type == Proximity_Type_usharp60_sc) {
+        state[instance].instance = instance;
+        drivers[instance] = new AP_Proximity_usharp60_sc(*this, state[instance], serial_manager);
 		return;
 	}
 
