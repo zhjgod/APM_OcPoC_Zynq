@@ -66,6 +66,7 @@ struct target_60_sc{
 	float x;
 	float y;
 	float z;
+	uint8_t snr;
 };
 
 class AP_Proximity_usharp60_sc : public AP_Proximity_Backend
@@ -90,7 +91,7 @@ private:
     bool get_reading(void);
     bool get_can_data(void);
     bool send_can_data(void);
-    uint16_t SUSum16(uint8_t *fp_data, uint8_t f_len);
+    uint16_t SUSum16(uint8_t *fp_data, uint16_t f_len);
 	
     Linux::CANDriver *can = nullptr;
 

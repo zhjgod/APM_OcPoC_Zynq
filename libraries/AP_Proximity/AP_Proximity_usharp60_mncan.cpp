@@ -106,14 +106,16 @@ bool AP_Proximity_usharp60_mncan::detect(AP_SerialManager &serial_manager) {
 	return true;
 }
 
-uint16_t AP_Proximity_usharp60_mncan::MNSum16(uint8_t *fp_data, uint8_t f_len) {
+uint16_t AP_Proximity_usharp60_mncan::MNSum16(uint8_t *fp_data, uint16_t f_len) {
  	uint16_t ret = 0;
+//	hal.console->printf("crc calculate: data = ");
     	for(int i=0;i<f_len;i++)
 	{
+//		hal.console->printf("%02x ",fp_data[i]);
 		ret += fp_data[i];
 	} 
-
-
+//	hal.console->printf("\n");
+//	hal.console->printf("crc len = %d,result = %d\n",f_len,ret);
    	 return ret;
 }
 
@@ -167,7 +169,7 @@ bool AP_Proximity_usharp60_mncan::get_can_data(void) {
 			break;
 		
 
-		//hal.console->printf("usharp60_mncan read:len = %d:\t%08x %02x %02x %02x %02x %02x %02x %02x %02x \n",canBytesLen-8,id,data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7]);
+//		hal.console->printf("usharp60_mncan read:len = %d:\t%08x %02x %02x %02x %02x %02x %02x %02x %02x \n",canBytesLen-8,id,data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7]);
 		mnCanID.id = id;
 		//hal.console->printf("ID:reserved=%d,head=%d,deviceID=%d,seq=%d,subSeq=%d\n",mnCanID.idBits.reserved,mnCanID.idBits.head,mnCanID.idBits.deviceID,mnCanID.idBits.seq,mnCanID.idBits.subSeq);
 		
@@ -248,7 +250,7 @@ bool AP_Proximity_usharp60_mncan::get_can_data(void) {
 					}
 					else
 					{
-//						hal.console->printf("crc error\n");
+						hal.console->printf("crc error\n");
 						canPkg.pkgInfo.flag = 0;
 						continue;
 					}
@@ -444,7 +446,7 @@ bool AP_Proximity_usharp60_mncan::send_can_data(void) {
 
 //	hal.console->printf("usharp60_by send:%08x %02x %02x %02x %02x %02x %02x %02x %02x \n",id,data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7]);
 
-#elif 1 //木牛协议
+#elif 0 //木牛协议
 	int8_t pitch_cor = frontend.get_pitch_correction(state.instance);
 	uint16_t sum = 0;
 	uint8_t dataAll[25];

@@ -315,7 +315,7 @@ void AP_Proximity::detect_instance(uint8_t instance)
 {
     uint8_t type = _type[instance];
 
-	type = Proximity_Type_usharp60_sc;
+//	type = Proximity_Type_usharp60_sc;
 	//type =Proximity_Type_uSharp60;
 
     if (type == Proximity_Type_SF40C) {

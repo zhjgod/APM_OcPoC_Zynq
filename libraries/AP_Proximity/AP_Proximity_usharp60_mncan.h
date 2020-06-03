@@ -84,7 +84,7 @@ private:
     bool get_reading(void);
     bool get_can_data(void);
     bool send_can_data(void);
-    uint16_t MNSum16(uint8_t *fp_data, uint8_t f_len);
+    uint16_t MNSum16(uint8_t *fp_data, uint16_t f_len);
 	uint16_t BoYingCRC16(uint8_t *fp_data, uint8_t f_len);
 	
     Linux::CANDriver *can = nullptr;

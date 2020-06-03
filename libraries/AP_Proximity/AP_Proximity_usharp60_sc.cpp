@@ -65,7 +65,7 @@ bool AP_Proximity_usharp60_sc::detect(AP_SerialManager &serial_manager) {
 	return true;
 }
 
-uint16_t AP_Proximity_usharp60_sc::SUSum16(uint8_t *fp_data, uint8_t f_len) {
+uint16_t AP_Proximity_usharp60_sc::SUSum16(uint8_t *fp_data, uint16_t f_len) {
  	uint16_t ret = 0;
     	for(int i=0;i<f_len;i++)
 	{
@@ -369,6 +369,80 @@ hal.console->printf("write to log\n");
 					update_boundary_for_sector(sector);
 				}
 			}	
+			else if(canPkg.data.cmd == 0x06 && canPkg.data.subCmd == 0x05)
+			{
+				
+				if (time_begin == 0) 
+				{
+					time_begin = AP_HAL::micros();
+				}
+				now = AP_HAL::micros();
+				times_taken = (now - time_begin) / 1000000.0;
+				time_begin = now;
+				
+				p_data = canPkg.data.data;
+				target_num = p_data[2];
+				frame_id =  p_data[0] << 8 | p_data[1];
+				
+				memset((uint8_t *)&targets_sc,0,sizeof(targets_sc));
+				for (int j = 0; j < target_num; j++) {
+					uint16_t idx = 3 + 7 * j;
+
+					uint16_t t_x = p_data[idx+0] << 8 | p_data[idx+1];
+					int16_t t_y = p_data[idx+2] << 8 | p_data[idx+3];
+					int16_t t_z = p_data[idx+4] << 8 | p_data[idx+5];
+
+					targets_sc[j].x = t_x / 100.0;
+					targets_sc[j].y = t_y / 100.0;
+					targets_sc[j].z = t_z / 100.0;
+					targets_sc[j].snr = p_data[idx+6];
+				}
+			
+				avoid_dis = targets_sc[0].x;
+				
+				hal.console->printf("write to log\n");
+				// record data
+				Utility::write_my_log_str("%f@(%f,%f,%f,%d,%d,%d,%f,%f,%f,%f,%d,%f,%f,%d,%d,%d)\n",
+								times_taken,
+								Utility::my_roll,
+								Utility::my_pitch,
+								Utility::my_yaw,
+								Utility::my_sona_alt,
+								Utility::my_baro_alt,
+								Utility::my_inv_alt,
+								Utility::my_vel_x,
+								Utility::my_vel_y,
+								Utility::my_vel_z,
+								avoid_dis,
+								Utility::my_avoid_flag,
+								Utility::my_current_velocity,
+								Utility::my_desired_velocity,
+								Utility::my_avoid_count,
+								frame_interal,
+								frame_id);
+				for (i=0; i<target_num; i++) {
+					Utility::write_my_log_str("%f\t%f\t%f\t%d\n",
+							targets_sc[i].x,
+							targets_sc[i].y,
+							targets_sc[i].z,
+							targets_sc[i].snr);
+				}
+				
+				
+				Utility::my_prx_dis = avoid_dis;
+				if (avoid_dis > 2) {
+					_distance[0] = avoid_dis;
+				} else {
+					_distance[0] = PROXIMITY_USHARP60_SC_DISTANCE_MAX;
+				}
+				for (i = 1; i < _num_sectors; i++) {
+					_distance[i] = PROXIMITY_USHARP60_SC_DISTANCE_MAX;
+				}
+
+				for (int sector = 0; sector < _num_sectors; sector++) {
+					update_boundary_for_sector(sector);
+				}
+			}
 			continue;
 			
 			
